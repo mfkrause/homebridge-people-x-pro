@@ -53,7 +53,7 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
 | `webhookPort`              | optional, default: 51828                                                                                                                                                                     |
 | `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                 |
 | `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 than the ping mechanism will not be used                                                                                             |
-| `ignoreReEnterExitSeconds` | optional, in minutes, default: 0, if set to 0 than every enter/exit will trigger state change otherwise the state will only change if no re-enter/exit occurs in specified number of seconds |
+| `ignoreReEnterExitSeconds` | optional, in seconds, default: 0, if set to 0 than every enter/exit will trigger state change otherwise the state will only change if no re-enter/exit occurs in specified number of seconds |
 | `target`                   | may be either a hostname or IP address                                                                                                                                                       |
 | `name`                     | a human-readable name for your sensor                                                                                                                                                        |
 
