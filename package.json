@@ -1,13 +1,13 @@
 {
-  "name": "homebridge-people-x",
-  "version": "0.7.2",
+  "name": "homebridge-people-x-pro",
+  "version": "0.7.3",
   "description": "Homebridge plugin that provides details of who is in a Home + History (powered by fakegato)",
   "keywords": [
     "homebridge-plugin"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/skrollme/homebridge-people.git"
+    "url": "https://github.com/mfkrause/homebridge-people-x-pro.git"
   },
   "engines": {
     "node": ">=0.12.0",
