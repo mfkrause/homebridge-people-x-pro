@@ -1,6 +1,5 @@
-**NOTE: Since version 0.5 the configuration changed to platform. You must fix your configuration to match the new configuration format.**
 ***
-# homebridge-people-x
+# homebridge-people-x-pro
 This is a plugin for [homebridge](https://github.com/nfarina/homebridge). It monitors who is at home, based on their smartphone being seen on the network recently.
 If you use the EVE.app you can also see the presence history of every person-sensor (powered by fakegato) 
 
@@ -9,7 +8,7 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
 # Installation
 
 1. Install homebridge (if not already installed) using: `npm install -g homebridge`
-2. Install this plugin using: `npm install -g homebridge-people-x`
+2. Install this plugin using: `npm install -g mfkrause/homebridge-people-x-pro`
 3. Update your configuration file. See below for a sample.
 
 # Configuration
@@ -17,7 +16,7 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
 ```
 "platforms": [
     {
-        "platform": "PeopleX",
+        "platform": "PeopleXPro",
         "threshold" : 15,
         "anyoneSensor" : true,
         "nooneSensor" : false,
@@ -31,14 +30,16 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
                 "target" : "PetesiPhone",
                 "threshold" : 15,
                 "pingInterval": 10000,
-                "ignoreReEnterExitSeconds": 0
+                "ignoreReEnterExitSeconds": 0,
+                "pingUseArp": false
             },
             {
                 "name" : "Someone Else",
                 "target" : "192.168.1.68",
                 "threshold" : 15,
                 "pingInterval": 10000,
-                "ignoreReEnterExitSeconds": 0
+                "ignoreReEnterExitSeconds": 0,
+                "pingUseArp": false
             }
         ]
     }
@@ -52,13 +53,14 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
 | `nooneSensor`              | optional, default: false                                                                                                                                                                     |
 | `webhookPort`              | optional, default: 51828                                                                                                                                                                     |
 | `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                 |
-| `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 than the ping mechanism will not be used                                                                                             |
+| `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 than the ping mechanism will not be used                                                                                                                                                 |
+| `pingUseArp`             | optional, use ARP lookup tables instead of ICMP ping. Defaults to false                                                                                             |
 | `ignoreReEnterExitSeconds` | optional, in seconds, default: 0, if set to 0 than every enter/exit will trigger state change otherwise the state will only change if no re-enter/exit occurs in specified number of seconds |
 | `target`                   | may be either a hostname or IP address                                                                                                                                                       |
 | `name`                     | a human-readable name for your sensor                                                                                                                                                        |
 
 # How it works
-* When started homebridge-people will continually ping the IP address associated with each person defined in config.json if `pingInterval` is not set to `-1`.
+* When started homebridge-people-x-pro will continually ping the IP address associated with each person defined in config.json if `pingInterval` is not set to `-1`.
 * With an iBeacon or geofencing smartphone app, you can configure a HTTP push to trigger when you enter and exit your 'home' region. This data will be combined with the ping functionality if used to give this plugin more precise presence data.
 * When a ping is successful the current timestamp is logged to a file (seen.db.json)
 * When a Homekit enabled app looks up the state of a person, the last seen time for that persons device is compared to the current time minus ```threshold``` minutes, and if it is greater assumes that the person is active.
@@ -82,7 +84,7 @@ Apps like [Locative](https://my.locative.io) range for iBeacons and geofences by
 
 To use this plugin with one of these apps, configure your region and set the HTTP push to `http://youripaddress:51828/?sensor=[name]&state=true` for arrival, and `http://youripaddress:51828/?sensor=[name]&state=false` for departure, where `[name]` is the name of the person the device belongs to as specified in your config under `people`. *Note:* you may need to enable port forwarding on your router to accomplish this.
 
-By default homebridge-people listens on port 51828 for updates.  This can be changed by setting `webhookPort` in your homebridge `config.json`.
+By default homebridge-people-x-pro listens on port 51828 for updates.  This can be changed by setting `webhookPort` in your homebridge `config.json`.
 
 # Notes
 ## Running on a raspberry pi as non 'pi' user
@@ -97,3 +99,4 @@ Thanks to everyone who's helped contribute code, feedback and support.  In parti
 * [simont77](https://github.com/simont77/fakegato-history) - for the fakegato-plugin
 * [wr](https://github.com/wr) - for adding in webhook support.
 * [benzman81](https://github.com/benzman81) - for porting the plugin over to be a Platform and improving how ping and webhooks work together, and numerous other fixes.
+* [skrollme](https://github.com/skrollme) - for the plugin this one is forked from
