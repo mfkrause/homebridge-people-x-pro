@@ -3,6 +3,7 @@ var moment = require('moment');
 var request = require("request");
 var http = require('http');
 var url = require('url');
+var arp = require('node-arp');
 var DEFAULT_REQUEST_TIMEOUT = 10000;
 var SENSOR_ANYONE = 'Anyone';
 var SENSOR_NOONE = 'No One';
@@ -16,9 +17,9 @@ module.exports = function(homebridge) {
     HomebridgeAPI = homebridge;
     FakeGatoHistoryService = require('fakegato-history')(homebridge);
 
-    homebridge.registerPlatform("homebridge-people-x", "PeopleX", PeoplePlatform);
-    homebridge.registerAccessory("homebridge-people-x", "PeopleAccessory", PeopleAccessory);
-    homebridge.registerAccessory("homebridge-people-x", "PeopleAllAccessory", PeopleAllAccessory);
+    homebridge.registerPlatform("homebridge-people-x-pro", "PeopleXPro", PeoplePlatform);
+    homebridge.registerAccessory("homebridge-people-x-pro", "PeopleAccessory", PeopleAccessory);
+    homebridge.registerAccessory("homebridge-people-x-pro", "PeopleAllAccessory", PeopleAllAccessory);
 }
 
 // #######################
@@ -33,6 +34,7 @@ function PeoplePlatform(log, config){
     this.webhookPort = config["webhookPort"] || 51828;
     this.cacheDirectory = config["cacheDirectory"] || HomebridgeAPI.user.persistPath();
     this.pingInterval = config["pingInterval"] || 10000;
+    this.pingUseArp = config["pingUseArp"];
     this.ignoreReEnterExitSeconds = config["ignoreReEnterExitSeconds"] || 0;
     this.people = config['people'];
     this.storage = require('node-persist');
@@ -314,18 +316,36 @@ PeopleAccessory.prototype.isActive = function() {
 
 PeopleAccessory.prototype.ping = function() {
     if(this.webhookIsOutdated()) {
-        ping.sys.probe(this.target, function(state){
-            if(this.webhookIsOutdated()) {
-                if (state) {
-                    this.platform.storage.setItemSync('lastSuccessfulPing_' + this.target, Date.now());
+        if(this.pingUseArp){
+            arp(this.target, function(err, mac){
+                let state = false;
+                if (!err && /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac)) state = true;
+
+                if(this.webhookIsOutdated()) {
+                    if (state) {
+                        this.platform.storage.setItemSync('lastSuccessfulPing_' + this.target, Date.now());
+                    }
+                    if(this.successfulPingOccurredAfterWebhook()) {
+                        var newState = this.isActive();
+                        this.setNewState(newState);
+                    }
                 }
-                if(this.successfulPingOccurredAfterWebhook()) {
-                    var newState = this.isActive();
-                    this.setNewState(newState);
+                setTimeout(PeopleAccessory.prototype.ping.bind(this), this.pingInterval);
+            }.bind(this));
+        }else{
+            ping.sys.probe(this.target, function(state){
+                if(this.webhookIsOutdated()) {
+                    if (state) {
+                        this.platform.storage.setItemSync('lastSuccessfulPing_' + this.target, Date.now());
+                    }
+                    if(this.successfulPingOccurredAfterWebhook()) {
+                        var newState = this.isActive();
+                        this.setNewState(newState);
+                    }
                 }
-            }
-            setTimeout(PeopleAccessory.prototype.ping.bind(this), this.pingInterval);
-        }.bind(this));
+                setTimeout(PeopleAccessory.prototype.ping.bind(this), this.pingInterval);
+            }.bind(this));
+        }
     }
     else {
         setTimeout(PeopleAccessory.prototype.ping.bind(this), this.pingInterval);
