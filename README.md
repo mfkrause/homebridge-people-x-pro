@@ -1,4 +1,42 @@
-                "target" : "192.168.1.68",
+* * *
+
+# homebridge-people-x-pro
+
+This is a plugin for [homebridge](https://github.com/nfarina/homebridge). It monitors who is at home, based on their smartphone being seen on the network recently.
+If you use the EVE.app you can also see the presence history of every person-sensor (powered by fakegato) 
+
+It can also receive webhooks sent by location-aware mobile apps (such as [Locative](https://my.locative.io), which can use iBeacons and geofencing to provide faster and more accurate location information.
+
+# Installation
+
+1.  Install homebridge (if not already installed) using: `npm install -g homebridge`
+2.  Install this plugin using: `npm install -g mfkrause/homebridge-people-x-pro`
+3.  Update your configuration file. See below for a sample.
+
+# Configuration
+
+    "platforms": [
+        {
+            "platform": "PeopleXPro",
+            "threshold" : 15,
+            "anyoneSensor" : true,
+            "nooneSensor" : false,
+            "webhookPort": 51828,
+            "cacheDirectory": "./.node-persist/storage",
+            "pingInterval": 10000,
+            "ignoreReEnterExitSeconds": 0,
+            "people" : [
+                {
+                    "name" : "Pete",
+                    "target" : "PetesiPhone",
+                    "threshold" : 15,
+                    "pingInterval": 10000,
+                    "ignoreReEnterExitSeconds": 0,
+                    "pingUseArp": false
+                },
+                {
+                    "name" : "Someone Else",
+                    "target" : "192.168.1.68",
                     "threshold" : 15,
                     "pingInterval": 10000,
                     "ignoreReEnterExitSeconds": 0,
