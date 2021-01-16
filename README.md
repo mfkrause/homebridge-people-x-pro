@@ -1,6 +1,6 @@
 * * *
 
-# homebridge-people-x-pro
+# homebridge-people-pro
 
 This is a plugin for [homebridge](https://github.com/nfarina/homebridge). It monitors who is at home, based on their smartphone being seen on the network recently.
 If you use the EVE.app you can also see the presence history of every person-sensor (powered by fakegato) 
@@ -10,7 +10,7 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
 # Installation
 
 1.  Install homebridge (if not already installed) using: `npm install -g homebridge`
-2.  Install this plugin using: `npm install -g mfkrause/homebridge-people-x-pro`
+2.  Install this plugin using: `npm install -g mfkrause/homebridge-people-pro`
 3.  Update your configuration file. See below for a sample.
 
 # Configuration
@@ -61,14 +61,14 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
 
 # How it works
 
--   When started homebridge-people-x-pro will continually ping the IP address associated with each person defined in config.json if `pingInterval` is not set to `-1`.
+-   When started homebridge-people-pro will continually ping the IP address associated with each person defined in config.json if `pingInterval` is not set to `-1`.
 -   With an iBeacon or geofencing smartphone app, you can configure a HTTP push to trigger when you enter and exit your 'home' region. This data will be combined with the ping functionality if used to give this plugin more precise presence data.
 -   When a ping is successful the current timestamp is logged to a file (seen.db.json)
 -   When a Homekit enabled app looks up the state of a person, the last seen time for that persons device is compared to the current time minus `threshold` minutes, and if it is greater assumes that the person is active.
 
 # 'Anyone' and 'No One' sensors
 
-Some HomeKit automations need to happen when "anyone" is home or when "no one" is around, but the default Home app makes this difficult. homebridge-people can automatically create additional sensors called "Anyone" and "No One" to make these automations very easy.
+Some HomeKit automations need to happen when "anyone" is home or when "no one" is around, but the default Home app makes this difficult. homebridge-people-pro can automatically create additional sensors called "Anyone" and "No One" to make these automations very easy.
 
 For example, you might want to run your "Arrive Home" scene when *Anyone* gets home. Or run "Leave Home" when *No One* is home.
 
@@ -88,7 +88,7 @@ Apps like [Locative](https://my.locative.io) range for iBeacons and geofences by
 
 To use this plugin with one of these apps, configure your region and set the HTTP push to `http://youripaddress:51828/?sensor=[name]&state=true` for arrival, and `http://youripaddress:51828/?sensor=[name]&state=false` for departure, where `[name]` is the name of the person the device belongs to as specified in your config under `people`. *Note:* you may need to enable port forwarding on your router to accomplish this.
 
-By default homebridge-people-x-pro listens on port 51828 for updates.  This can be changed by setting `webhookPort` in your homebridge `config.json`.
+By default homebridge-people-pro listens on port 51828 for updates.  This can be changed by setting `webhookPort` in your homebridge `config.json`.
 
 # Notes
 
@@ -104,7 +104,7 @@ On some docker-environments (alpine-based for example) it is possible that the p
 
 Thanks to everyone who's helped contribute code, feedback and support.  In particular:
 
--   [PeteLawrence](https://github.com/PeteLawrence/homebridge-people) - for the plugin which this one is forked from
+-   [PeteLawrence](https://github.com/PeteLawrence/homebridge-people) - for the original plugin
 -   [simont77](https://github.com/simont77/fakegato-history) - for the fakegato-plugin
 -   [wr](https://github.com/wr) - for adding in webhook support.
 -   [benzman81](https://github.com/benzman81) - for porting the plugin over to be a Platform and improving how ping and webhooks work together, and numerous other fixes.
