@@ -1,6 +1,6 @@
 {
   "name": "homebridge-people-pro",
-  "version": "0.7.4",
+  "version": "0.8.0",
   "description": "Homebridge plugin that provides details of who is in a Home + History (powered by fakegato)",
   "keywords": [
     "homebridge-plugin"
@@ -20,5 +20,10 @@
     "node-persist": "0.0.8",
     "ping": "^0.1.10",
     "request": "^2.79.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.18.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
   }
 }
