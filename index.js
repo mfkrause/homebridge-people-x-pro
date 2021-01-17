@@ -3,12 +3,15 @@ const moment = require('moment');
 const http = require('http');
 const url = require('url');
 const arp = require('node-arp');
+const storage = require('node-persist');
 
 const SENSOR_ANYONE = 'Anyone';
 const SENSOR_NOONE = 'No One';
 let FakeGatoHistoryService;
 
-let Service, Characteristic, HomebridgeAPI;
+let Service;
+let Characteristic;
+let HomebridgeAPI;
 module.exports = function (homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
@@ -36,14 +39,14 @@ function PeopleProPlatform(log, config) {
   this.pingUseArp = config.pingUseArp;
   this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds || 0;
   this.people = config.people;
-  this.storage = require('node-persist');
+  this.storage = storage;
   this.storage.initSync({ dir: this.cacheDirectory });
   this.webhookQueue = [];
 }
 
 PeopleProPlatform.prototype = {
 
-  accessories: function (callback) {
+  accessories(callback) {
     this.accessories = [];
     this.peopleProAccessories = [];
     for (let i = 0; i < this.people.length; i += 1) {
@@ -64,7 +67,7 @@ PeopleProPlatform.prototype = {
     this.startServer();
   },
 
-  startServer: function () {
+  startServer() {
     //
     // HTTP webserver code influenced by benzman81's great
     // homebridge-http-webhooks homebridge plugin.
@@ -72,16 +75,16 @@ PeopleProPlatform.prototype = {
     //
 
     // Start the HTTP webserver
-    http.createServer((function (request, response) {
+    http.createServer(((request, response) => {
       const theUrl = request.url;
       const theUrlParts = url.parse(theUrl, true);
       const theUrlParams = theUrlParts.query;
       let body = [];
-      request.on('error', (function (err) {
+      request.on('error', ((err) => {
         this.log('WebHook error: %s.', err);
-      }).bind(this)).on('data', function (chunk) {
+      })).on('data', (chunk) => {
         body.push(chunk);
-      }).on('end', (function () {
+      }).on('end', (() => {
         body = Buffer.concat(body).toString();
 
         response.on('error', function (err) {
@@ -98,34 +101,37 @@ PeopleProPlatform.prototype = {
           this.log(errorText);
           response.write(errorText);
           response.end();
-        }
-        else {
+        } else {
           const sensor = theUrlParams.sensor.toLowerCase();
-          const newState = (theUrlParams.state == 'true');
+          const newState = (theUrlParams.state === 'true');
           this.log(`Received hook for ${sensor} -> ${newState}`);
           const responseBody = {
             success: true,
           };
           for (let i = 0; i < this.peopleProAccessories.length; i += 1) {
             const peopleProAccessory = this.peopleProAccessories[i];
-            var target = peopleProAccessory.target;
+            const { target } = peopleProAccessory;
             if (peopleProAccessory.name.toLowerCase() === sensor) {
               this.clearWebhookQueueForTarget(target);
-              this.webhookQueue.push({ 'target': target, 'newState': newState, 'timeoutvar': setTimeout((function () {
-                this.runWebhookFromQueueForTarget(target);
-              }).bind(this), peopleProAccessory.ignoreReEnterExitSeconds * 1000) });
+              this.webhookQueue.push({
+                target,
+                newState,
+                timeoutvar: setTimeout((() => {
+                  this.runWebhookFromQueueForTarget(target);
+                }), peopleProAccessory.ignoreReEnterExitSeconds * 1000),
+              });
               break;
             }
           }
           response.write(JSON.stringify(responseBody));
           response.end();
         }
-      }).bind(this));
-    }).bind(this)).listen(this.webhookPort);
+      }));
+    })).listen(this.webhookPort);
     this.log("WebHook: Started server on port '%s'.", this.webhookPort);
   },
 
-  clearWebhookQueueForTarget: function (target) {
+  clearWebhookQueueForTarget(target) {
     for (let i = 0; i < this.webhookQueue.length; i += 1) {
       const webhookQueueEntry = this.webhookQueue[i];
       if (webhookQueueEntry.target == target) {
@@ -136,20 +142,20 @@ PeopleProPlatform.prototype = {
     }
   },
 
-  runWebhookFromQueueForTarget: function (target) {
+  runWebhookFromQueueForTarget(target) {
     for (let i = 0; i < this.webhookQueue.length; i += 1) {
       const webhookQueueEntry = this.webhookQueue[i];
       if (webhookQueueEntry.target == target) {
-        this.log('Running hook for ' + target + ' -> ' + webhookQueueEntry.newState);
+        this.log(`Running hook for ${target} -> ${webhookQueueEntry.newState}`);
         this.webhookQueue.splice(i, 1);
-        this.storage.setItemSync('lastWebhook_' + target, Date.now());
+        this.storage.setItemSync(`lastWebhook_${target}`, Date.now());
         this.getPeopleProAccessoryForTarget(target).setNewState(webhookQueueEntry.newState);
         break;
       }
     }
   },
 
-  getPeopleProAccessoryForTarget: function (target) {
+  getPeopleProAccessoryForTarget(target) {
     for (let i = 0; i < this.peopleProAccessories.length; i += 1) {
       const peopleProAccessory = this.peopleProAccessories[i];
       if (peopleProAccessory.target === target) {
@@ -241,16 +247,16 @@ function PeopleProAccessory(log, config, platform) {
   this.service.addCharacteristic(SensitivityCharacteristic);
   this.service
     .getCharacteristic(SensitivityCharacteristic)
-    .on('get', function (callback) {
+    .on('get', (callback) => {
       callback(null, 4);
-    }.bind(this));
+    });
 
   this.service.addCharacteristic(DurationCharacteristic);
   this.service
     .getCharacteristic(DurationCharacteristic)
-    .on('get', function (callback) {
+    .on('get', (callback) => {
       callback(null, 5);
-    }.bind(this));
+    });
 
   this.accessoryService = new Service.AccessoryInformation();
   this.accessoryService
@@ -275,10 +281,8 @@ function PeopleProAccessory(log, config, platform) {
 }
 
 PeopleProAccessory.encodeState = function (state) {
-  if (state)
-    return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
-  else
-    return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
+  if (state) return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
+  return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
 };
 
 PeopleProAccessory.prototype.getState = function (callback) {
@@ -294,7 +298,7 @@ PeopleProAccessory.prototype.getLastActivation = function (callback) {
 };
 
 PeopleProAccessory.prototype.identify = function (callback) {
-  this.log('Identify: ' + this.name);
+  this.log(`Identify: ${this.name}`);
   callback();
 };
 
@@ -316,7 +320,7 @@ PeopleProAccessory.prototype.isActive = function () {
 PeopleProAccessory.prototype.ping = function () {
   if (this.webhookIsOutdated()) {
     if (this.pingUseArp) {
-      arp(this.target, function (err, mac) {
+      arp(this.target, (err, mac) => {
         let state = false;
         if (!err && /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac)) state = true;
 
@@ -330,9 +334,9 @@ PeopleProAccessory.prototype.ping = function () {
           }
         }
         setTimeout(PeopleProAccessory.prototype.ping.bind(this), this.pingInterval);
-      }.bind(this));
+      });
     } else {
-      ping.sys.probe(this.target, function (state) {
+      ping.sys.probe(this.target, (state) => {
         if (this.webhookIsOutdated()) {
           if (state) {
             this.platform.storage.setItemSync(`lastSuccessfulPing_${this.target}`, Date.now());
@@ -343,10 +347,9 @@ PeopleProAccessory.prototype.ping = function () {
           }
         }
         setTimeout(PeopleProAccessory.prototype.ping.bind(this), this.pingInterval);
-      }.bind(this));
+      });
     }
-  }
-  else {
+  } else {
     setTimeout(PeopleProAccessory.prototype.ping.bind(this), this.pingInterval);
   }
 };
@@ -377,7 +380,7 @@ PeopleProAccessory.prototype.successfulPingOccurredAfterWebhook = function () {
 
 PeopleProAccessory.prototype.setNewState = function (newState) {
   const oldState = this.stateCache;
-  if (oldState != newState) {
+  if (oldState !== newState) {
     this.stateCache = newState;
     this.service.getCharacteristic(Characteristic.MotionDetected)
       .updateValue(PeopleProAccessory.encodeState(newState));
