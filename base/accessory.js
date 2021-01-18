@@ -19,6 +19,7 @@ class PeopleProAccessory {
     this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds
                                       || this.platform.ignoreReEnterExitSeconds;
     this.stateCache = false;
+    this.pingUseArp = ((typeof (config.pingUseArp) !== 'undefined' && config.pingUseArp !== null) ? config.pingUseArp : false);
 
     this.service = new Service.MotionSensor(this.name);
     this.service

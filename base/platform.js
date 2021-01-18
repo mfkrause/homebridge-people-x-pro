@@ -19,7 +19,6 @@ class PeopleProPlatform {
     this.webhookPort = config.webhookPort || 51828;
     this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
     this.pingInterval = config.pingInterval || 10000;
-    this.pingUseArp = ((typeof (config.pingUseArp) !== 'undefined' && config.pingUseArp !== null) ? config.pingUseArp : false);
     this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds || 0;
     this.people = config.people;
     this.storage = storage;
