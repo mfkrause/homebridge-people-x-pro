@@ -1,5 +1,3 @@
-* * *
-
 # homebridge-people-pro
 
 This is a plugin for [homebridge](https://github.com/nfarina/homebridge). It monitors who is at home, based on their smartphone being seen on the network recently.
