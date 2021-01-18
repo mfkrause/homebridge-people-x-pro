@@ -145,10 +145,10 @@ class PeopleProPlatform {
     }
     return null;
   }
-
-  setHomebridge(homebridgeRef) {
-    this.homebridge = homebridgeRef;
-  }
 }
+
+PeopleProPlatform.setHomebridge = (homebridgeRef) => {
+  homebridge = homebridgeRef;
+};
 
 module.exports = PeopleProPlatform;
