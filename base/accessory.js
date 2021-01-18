@@ -107,7 +107,7 @@ class PeopleProAccessory {
   pingFunction() {
     if (this.webhookIsOutdated()) {
       if (this.pingUseArp) {
-        arp(this.target, (err, mac) => {
+        arp.getMAC(this.target, (err, mac) => {
           let state = false;
           if (!err && /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac)) state = true;
 
