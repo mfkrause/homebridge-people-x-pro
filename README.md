@@ -10,7 +10,7 @@ It can also receive webhooks sent by location-aware mobile apps (such as [Locati
 # Installation
 
 1.  Install homebridge (if not already installed) using: `npm install -g homebridge`
-2.  Install this plugin using: `npm install -g mfkrause/homebridge-people-pro`
+2.  Install this plugin using: `npm install -g homebridge-people-pro`
 3.  Update your configuration file. See below for a sample.
 
 # Example Configuration
