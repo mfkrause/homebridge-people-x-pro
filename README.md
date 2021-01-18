@@ -3,7 +3,7 @@
 This is a plugin for [homebridge](https://github.com/nfarina/homebridge). It monitors who is at home, based on their smartphone being seen on the network recently.
 If you use the EVE.app you can also see the presence history of every person sensor (powered by fakegato).
 
-It can also receive webhooks sent by location-aware mobile apps (such as [Locative](https://my.locative.io), which can use iBeacons and geofencing to provide faster and more accurate location information.
+It can also optionally spin up a webserver and receive webhooks sent by location-aware mobile apps (such as [Locative](https://my.locative.io), which can use iBeacons and geofencing to provide faster and more accurate location information.
 
 # Installation
 
@@ -22,10 +22,11 @@ See `config-sample.json` for an example config.
 | `threshold`                | optional, in minutes, default: 15                                                                                                                                                            |
 | `anyoneSensor`             | optional, default: true                                                                                                                                                                      |
 | `nooneSensor`              | optional, default: false                                                                                                                                                                     |
+| `webhookEnabled`           | optional, default: false, enable webhook functional / webserver                                                                                                                              |
 | `webhookPort`              | optional, default: 51828                                                                                                                                                                     |
 | `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                 |
 | `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 the ping/arp mechanism will not be used                                                                                              |
-| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping                                                                                                                        |
+| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping                                                                                                                         |
 | `ignoreReEnterExitSeconds` | optional, in seconds, default: 0, if set to 0 every enter/exit will trigger state change otherwise the state will only change if no re-enter/exit occurs in specified number of seconds      |
 
 # How it works
@@ -57,7 +58,7 @@ Apps like [Locative](https://my.locative.io) range for iBeacons and geofences by
 
 To use this plugin with one of these apps, configure your region and set the HTTP push to `http://youripaddress:51828/?sensor=[name]&state=true` for arrival, and `http://youripaddress:51828/?sensor=[name]&state=false` for departure, where `[name]` is the name of the person the device belongs to as specified in your config under `people`. *Note:* you may need to enable port forwarding on your router to accomplish this.
 
-By default homebridge-people-pro listens on port 51828 for updates. This can be changed by setting `webhookPort` in your homebridge `config.json`.
+If webhook functionality is enabled (set `webhookEnabled` to `true` in your homebridge `config.json`), homebridge-people-pro listens on port 51828 for updates. This can be changed using the setting `webhookPort` in your homebridge config.
 
 # Notes
 

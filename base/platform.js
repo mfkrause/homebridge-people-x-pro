@@ -17,6 +17,7 @@ class PeopleProPlatform {
     this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : true);
     this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : false);
     this.webhookPort = config.webhookPort || 51828;
+    this.webhookEnabled = ((typeof (config.webhookEnabled) !== 'undefined' && config.webhookEnabled !== null) ? config.webhookEnabled : false);
     this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
     this.pingInterval = config.pingInterval || 10000;
     this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds || 0;
@@ -44,7 +45,9 @@ class PeopleProPlatform {
     }
     callback(this.accessories);
 
-    this.startServer();
+    if (this.webhookEnabled) {
+      this.startServer();
+    }
   }
 
   startServer() {
