@@ -15,11 +15,11 @@ class PeopleProPlatform {
     this.log = log;
     this.threshold = config.threshold || 15;
     this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : true);
-    this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : true);
+    this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : false);
     this.webhookPort = config.webhookPort || 51828;
     this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
     this.pingInterval = config.pingInterval || 10000;
-    this.pingUseArp = config.pingUseArp;
+    this.pingUseArp = ((typeof (config.pingUseArp) !== 'undefined' && config.pingUseArp !== null) ? config.pingUseArp : false);
     this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds || 0;
     this.people = config.people;
     this.storage = storage;
