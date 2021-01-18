@@ -151,3 +151,5 @@ PeopleProPlatform.prototype = {
     this.homebridge = homebridgeRef;
   },
 };
+
+module.exports = PeopleProPlatform;

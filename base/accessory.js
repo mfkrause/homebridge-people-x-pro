@@ -256,3 +256,5 @@ PeopleProAccessory.prototype.getServices = function () {
 
   return servicesList;
 };
+
+module.exports = PeopleProAccessory;

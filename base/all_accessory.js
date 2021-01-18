@@ -55,3 +55,5 @@ PeopleProAllAccessory.prototype.refreshState = function () {
 PeopleProAllAccessory.prototype.getServices = function () {
   return [this.service, this.accessoryService];
 };
+
+module.exports = PeopleProAllAccessory;
