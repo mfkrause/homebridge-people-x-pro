@@ -39,3 +39,6 @@ jspm_packages/
 # VS Code
 .vscode-test
 .code-workspace
+
+# File System
+.DS_Store
