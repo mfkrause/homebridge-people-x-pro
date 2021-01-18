@@ -9,7 +9,10 @@
     ],
     "globals": {
       "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly"
+      "SharedArrayBuffer": "readonly",
+      "Service": "readonly",
+      "Characteristic": "readonly",
+      "FakeGatoHistoryService": "readonly"
     },
     "parserOptions": {
       "ecmaVersion": 2018
