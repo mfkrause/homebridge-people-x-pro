@@ -27,7 +27,7 @@ See `config-sample.json` for an example config.
 | `webhookPort`              | optional, default: 51828                                                                                                                                                                     |
 | `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                 |
 | `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 the ping/arp mechanism will not be used                                                                                              |
-| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping.                                                                                                                        |
+| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping                                                                                                                        |
 | `ignoreReEnterExitSeconds` | optional, in seconds, default: 0, if set to 0 every enter/exit will trigger state change otherwise the state will only change if no re-enter/exit occurs in specified number of seconds      |
 
 # How it works
