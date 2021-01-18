@@ -13,7 +13,7 @@
                     "target" : "PetesiPhone",
                     "threshold" : 15,
                     "pingInterval": 10000,
-                    "webookEnabled": true,
+                    "webhookEnabled": true,
                     "ignoreWebhookReEnter": 0,
                     "pingUseArp": true
                 },
