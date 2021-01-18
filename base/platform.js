@@ -20,7 +20,7 @@ class PeopleProPlatform {
     this.webhookEnabled = ((typeof (config.webhookEnabled) !== 'undefined' && config.webhookEnabled !== null) ? config.webhookEnabled : false);
     this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
     this.pingInterval = config.pingInterval || 10000;
-    this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds || 0;
+    this.ignoreWebhookReEnter = config.ignoreWebhookReEnter || 0;
     this.people = config.people;
     this.storage = storage;
     this.storage.initSync({ dir: this.cacheDirectory });
@@ -101,7 +101,7 @@ class PeopleProPlatform {
                 newState,
                 timeoutvar: setTimeout((() => {
                   this.runWebhookFromQueueForTarget(target);
-                }), peopleProAccessory.ignoreReEnterExitSeconds * 1000),
+                }), peopleProAccessory.ignoreWebhookReEnter * 1000),
               });
               break;
             }

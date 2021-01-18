@@ -15,19 +15,19 @@ It can also optionally spin up a webserver and receive webhooks sent by location
 
 See `config-sample.json` for an example config.
 
-| Parameter                  | Note                                                                                                                                                                                         |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `target`                   | may be either a hostname or IP address                                                                                                                                                       |
-| `name`                     | a human-readable name for your sensor                                                                                                                                                        |
-| `threshold`                | optional, in minutes, default: 15                                                                                                                                                            |
-| `anyoneSensor`             | optional, default: true                                                                                                                                                                      |
-| `nooneSensor`              | optional, default: false                                                                                                                                                                     |
-| `webhookEnabled`           | optional, default: false, enable webhook functionality / webserver                                                                                                                           |
-| `webhookPort`              | optional, default: 51828                                                                                                                                                                     |
-| `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                 |
-| `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 the ping/arp mechanism will not be used                                                                                              |
-| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping                                                                                                                         |
-| `ignoreReEnterExitSeconds` | optional, in seconds, default: 0, if set to 0 every enter/exit will trigger state change otherwise the state will only change if no re-enter/exit occurs in specified number of seconds      |
+| Parameter                  | Note                                                                                                                                                                                                |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `target`                   | may be either a hostname or IP address                                                                                                                                                              |
+| `name`                     | a human-readable name for your sensor                                                                                                                                                               |
+| `threshold`                | optional, in minutes, default: 15                                                                                                                                                                   |
+| `anyoneSensor`             | optional, default: true                                                                                                                                                                             |
+| `nooneSensor`              | optional, default: false                                                                                                                                                                            |
+| `webhookEnabled`           | optional, default: false, enable webhook functionality / webserver                                                                                                                                  |
+| `webhookPort`              | optional, default: 51828                                                                                                                                                                            |
+| `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                        |
+| `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 the ping/arp mechanism will not be used                                                                                                     |
+| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping                                                                                                                                |
+| `ignoreWebhookReEnter`     | optional, in seconds, default: 0, if set to 0 every webhook re-enter/exit will trigger state change; otherwise the state will only change if no re-enter/exit occurs in specified number of seconds |
 
 # How it works
 

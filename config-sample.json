@@ -7,23 +7,21 @@
             "nooneSensor" : false,
             "webhookPort": 51828,
             "cacheDirectory": "./.node-persist/storage",
-            "pingInterval": 10000,
-            "ignoreReEnterExitSeconds": 0,
             "people" : [
                 {
                     "name" : "Pete",
                     "target" : "PetesiPhone",
                     "threshold" : 15,
                     "pingInterval": 10000,
-                    "ignoreReEnterExitSeconds": 0,
-                    "pingUseArp": false
+                    "webookEnabled": true,
+                    "ignoreWebhookReEnter": 0,
+                    "pingUseArp": true
                 },
                 {
                     "name" : "Someone Else",
                     "target" : "192.168.1.68",
                     "threshold" : 15,
                     "pingInterval": 10000,
-                    "ignoreReEnterExitSeconds": 0,
                     "pingUseArp": false
                 }
             ]

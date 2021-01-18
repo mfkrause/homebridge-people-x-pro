@@ -16,8 +16,6 @@ class PeopleProAccessory {
     this.platform = platform;
     this.threshold = config.threshold || this.platform.threshold;
     this.pingInterval = config.pingInterval || this.platform.pingInterval;
-    this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds
-                                      || this.platform.ignoreReEnterExitSeconds;
     this.stateCache = false;
     this.pingUseArp = ((typeof (config.pingUseArp) !== 'undefined' && config.pingUseArp !== null) ? config.pingUseArp : false);
 
