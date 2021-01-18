@@ -109,7 +109,7 @@ class PeopleProAccessory {
     this.initStateCache();
 
     if (this.pingInterval > -1) {
-      this.ping();
+      this.pingFunction();
     }
   }
 
