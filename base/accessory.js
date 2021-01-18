@@ -194,7 +194,11 @@ class PeopleProAccessory {
         time: moment().unix(),
         status: (newState) ? 1 : 0,
       });
-      this.log('Changed occupancy state for %s to %s. Last successful ping %s , last webhook %s .', this.target, newState, lastSuccessfulPingMoment, lastWebhookMoment);
+      if (this.pingUseArp) {
+        this.log('Changed occupancy state for %s to %s. Last successful arp lookup %s , last webhook %s .', this.target, newState, lastSuccessfulPingMoment, lastWebhookMoment);
+      } else {
+        this.log('Changed occupancy state for %s to %s. Last successful ping %s , last webhook %s .', this.target, newState, lastSuccessfulPingMoment, lastWebhookMoment);
+      }
     }
   }
 
