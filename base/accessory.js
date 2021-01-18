@@ -166,7 +166,7 @@ class PeopleProAccessory {
               this.setNewState(newState);
             }
           }
-          setTimeout(ping.bind(this), this.pingInterval);
+          setTimeout(this.ping, this.pingInterval);
         });
       } else {
         ping.sys.probe(this.target, (state) => {
@@ -179,11 +179,11 @@ class PeopleProAccessory {
               this.setNewState(newState);
             }
           }
-          setTimeout(ping.bind(this), this.pingInterval);
+          setTimeout(this.ping, this.pingInterval);
         });
       }
     } else {
-      setTimeout(ping.bind(this), this.pingInterval);
+      setTimeout(this.ping, this.pingInterval);
     }
   }
 
