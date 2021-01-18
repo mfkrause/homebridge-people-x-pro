@@ -150,7 +150,7 @@ class PeopleProAccessory {
     return false;
   }
 
-  ping() {
+  pingFunction() {
     if (this.webhookIsOutdated()) {
       if (this.pingUseArp) {
         arp(this.target, (err, mac) => {
@@ -166,7 +166,7 @@ class PeopleProAccessory {
               this.setNewState(newState);
             }
           }
-          setTimeout(this.ping, this.pingInterval);
+          setTimeout(this.pingFunction.bind(this), this.pingInterval);
         });
       } else {
         ping.sys.probe(this.target, (state) => {
@@ -179,11 +179,11 @@ class PeopleProAccessory {
               this.setNewState(newState);
             }
           }
-          setTimeout(this.ping, this.pingInterval);
+          setTimeout(this.pingFunction.bind(this), this.pingInterval);
         });
       }
     } else {
-      setTimeout(this.ping, this.pingInterval);
+      setTimeout(this.pingFunction.bind(this), this.pingInterval);
     }
   }
 
