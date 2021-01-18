@@ -10,23 +10,22 @@ const SENSOR_NOONE = 'No One';
 
 let homebridge;
 
-function PeopleProPlatform(log, config) {
-  this.log = log;
-  this.threshold = config.threshold || 15;
-  this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : true);
-  this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : true);
-  this.webhookPort = config.webhookPort || 51828;
-  this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
-  this.pingInterval = config.pingInterval || 10000;
-  this.pingUseArp = config.pingUseArp;
-  this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds || 0;
-  this.people = config.people;
-  this.storage = storage;
-  this.storage.initSync({ dir: this.cacheDirectory });
-  this.webhookQueue = [];
-}
-
-PeopleProPlatform.prototype = {
+class PeopleProPlatform {
+  constructor(log, config) {
+    this.log = log;
+    this.threshold = config.threshold || 15;
+    this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : true);
+    this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : true);
+    this.webhookPort = config.webhookPort || 51828;
+    this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
+    this.pingInterval = config.pingInterval || 10000;
+    this.pingUseArp = config.pingUseArp;
+    this.ignoreReEnterExitSeconds = config.ignoreReEnterExitSeconds || 0;
+    this.people = config.people;
+    this.storage = storage;
+    this.storage.initSync({ dir: this.cacheDirectory });
+    this.webhookQueue = [];
+  }
 
   accessories(callback) {
     this.accessories = [];
@@ -47,7 +46,7 @@ PeopleProPlatform.prototype = {
     callback(this.accessories);
 
     this.startServer();
-  },
+  }
 
   startServer() {
     //
@@ -111,7 +110,7 @@ PeopleProPlatform.prototype = {
       }));
     })).listen(this.webhookPort);
     this.log("WebHook: Started server on port '%s'.", this.webhookPort);
-  },
+  }
 
   clearWebhookQueueForTarget(target) {
     for (let i = 0; i < this.webhookQueue.length; i += 1) {
@@ -122,7 +121,7 @@ PeopleProPlatform.prototype = {
         break;
       }
     }
-  },
+  }
 
   runWebhookFromQueueForTarget(target) {
     for (let i = 0; i < this.webhookQueue.length; i += 1) {
@@ -135,7 +134,7 @@ PeopleProPlatform.prototype = {
         break;
       }
     }
-  },
+  }
 
   getPeopleProAccessoryForTarget(target) {
     for (let i = 0; i < this.peopleProAccessories.length; i += 1) {
@@ -145,11 +144,11 @@ PeopleProPlatform.prototype = {
       }
     }
     return null;
-  },
+  }
 
   setHomebridge(homebridgeRef) {
     this.homebridge = homebridgeRef;
-  },
-};
+  }
+}
 
 module.exports = PeopleProPlatform;
