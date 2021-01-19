@@ -2,6 +2,8 @@
     "platform": "PeoplePro",
     "anyoneSensor" : true,
     "nooneSensor" : false,
+    "anyoneSensorName": "Anyone",
+    "nooneSensorName": "No One",
     "webhookPort": 51828,
     "cacheDirectory": "./.node-persist/storage",
     "webhookEnabled": true,

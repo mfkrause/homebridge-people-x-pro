@@ -1,7 +1,5 @@
 const PeopleProAccessory = require('./accessory');
 
-const SENSOR_NOONE = 'No One';
-
 class PeopleProAllAccessory {
   constructor(log, name, platform) {
     this.log = log;
@@ -16,7 +14,7 @@ class PeopleProAllAccessory {
     this.accessoryService = new Service.AccessoryInformation();
     this.accessoryService
       .setCharacteristic(Characteristic.Name, this.name)
-      .setCharacteristic(Characteristic.SerialNumber, (this.name === SENSOR_NOONE) ? 'hps-noone' : 'hps-all')
+      .setCharacteristic(Characteristic.SerialNumber, (this.name === this.platform.nooneSensorName) ? 'hps-noone' : 'hps-all')
       .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
   }
 
@@ -43,7 +41,7 @@ class PeopleProAllAccessory {
    */
   getStateFromCache() {
     const isAnyoneActive = this.getAnyoneStateFromCache();
-    if (this.name === SENSOR_NOONE) {
+    if (this.name === this.platform.nooneSensorName) {
       return !isAnyoneActive;
     }
     return isAnyoneActive;

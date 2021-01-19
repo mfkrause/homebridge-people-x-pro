@@ -5,9 +5,6 @@ const url = require('url');
 const PeopleProAccessory = require('./accessory');
 const PeopleProAllAccessory = require('./all_accessory');
 
-const SENSOR_ANYONE = 'Anyone';
-const SENSOR_NOONE = 'No One';
-
 let homebridge;
 
 class PeopleProPlatform {
@@ -16,6 +13,8 @@ class PeopleProPlatform {
     this.threshold = config.threshold || 15;
     this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : true);
     this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : false);
+    this.anyoneSensorName = config.anyoneSensorName || 'Anyone';
+    this.nooneSensorName = config.nooneSensorName || 'No One';
     this.webhookPort = config.webhookPort || 51828;
     this.webhookEnabled = ((typeof (config.webhookEnabled) !== 'undefined' && config.webhookEnabled !== null) ? config.webhookEnabled : false);
     this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
@@ -40,11 +39,11 @@ class PeopleProPlatform {
 
     // Add "anyone" and "no one" sensors / accessories
     if (this.anyoneSensor) {
-      this.peopleAnyOneAccessory = new PeopleProAllAccessory(this.log, SENSOR_ANYONE, this);
+      this.peopleAnyOneAccessory = new PeopleProAllAccessory(this.log, this.anyoneSensorName, this);
       this.accessories.push(this.peopleAnyOneAccessory);
     }
     if (this.nooneSensor) {
-      this.peopleNoOneAccessory = new PeopleProAllAccessory(this.log, SENSOR_NOONE, this);
+      this.peopleNoOneAccessory = new PeopleProAllAccessory(this.log, this.nooneSensorName, this);
       this.accessories.push(this.peopleNoOneAccessory);
     }
     callback(this.accessories);

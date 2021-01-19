@@ -11,11 +11,29 @@
                 "required": false,
                 "placeholder": true
             },
+            "anyoneSensorName": {
+                "type": "string",
+                "title": "Name of the anyone sensor",
+                "required": false,
+                "placeholder": "Anyone",
+                "condition": {
+                    "functionBody": "return model.anyoneSensor === true;"
+                }
+            },
             "nooneSensor": {
                 "type": "boolean",
                 "title": "Enable noone sensor",
                 "required": false,
                 "placeholder": false
+            },
+            "nooneSensorName": {
+                "type": "string",
+                "title": "Name of the no one sensor",
+                "required": false,
+                "placeholder": "No One",
+                "condition": {
+                    "functionBody": "return model.nooneSensor === true;"
+                }
             },
             "webhookEnabled": {
                 "type": "boolean",
@@ -29,7 +47,10 @@
                 "title": "Webhook port",
                 "required": false,
                 "description": "The port the webserver for the webhooks will run on.",
-                "placeholder": 51828
+                "placeholder": 51828,
+                "condition": {
+                    "functionBody": "return model.webhookEnabled === true;"
+                }
             },
             "cacheDirectory": {
                 "type": "string",
@@ -52,7 +73,7 @@
                         "name": {
                            "type": "string",
                             "title": "Sensor Name",
-                            "required": true,
+                            "required": true
                         },
                         "target": {
                             "type": "string",
@@ -80,19 +101,22 @@
                             "required": false,
                             "placeholder": false
                         },
-                        "ignoreWebhookReEnter": {
-                            "type": "integer",
-                            "title": "Ignore webhook re-enter (s)",
-                            "required": false,
-                            "description": "Amount of seconds a webhook re-enter or re-exit is ignored for. If set to 0, every webhook re-enter/exit will trigger state change; otherwise the state will only change if no re-enter/exit occurs in the specified number of seconds.",
-                            "placeholder": 0
-                        },
                         "excludeFromWebhook": {
                             "type": "boolean",
                             "title": "Exclude from webhook",
                             "required": false,
                             "description": "If set to true, this sensor can't be updated through webhooks as the requests will be ignored.",
                             "placeholder": false
+                        },
+                        "ignoreWebhookReEnter": {
+                            "type": "integer",
+                            "title": "Ignore webhook re-enter (s)",
+                            "required": false,
+                            "description": "Amount of seconds a webhook re-enter or re-exit is ignored for. If set to 0, every webhook re-enter/exit will trigger state change; otherwise the state will only change if no re-enter/exit occurs in the specified number of seconds.",
+                            "placeholder": 0,
+                            "condition": {
+                                "functionBody": "return model.people[arrayIndices].excludeFromWebhook !== true;"
+                            }
                         }
                     }
                 }
