@@ -9,14 +9,12 @@
                 "type": "boolean",
                 "title": "Enable anyone sensor",
                 "required": false,
-                "description": "Enables the 'anyone' sensor.",
                 "placeholder": true
             },
             "nooneSensor": {
                 "type": "boolean",
                 "title": "Enable noone sensor",
                 "required": false,
-                "description": "Enables the 'noone' sensor.",
                 "placeholder": false
             },
             "webhookEnabled": {
@@ -55,7 +53,6 @@
                            "type": "string",
                             "title": "Sensor Name",
                             "required": true,
-                            "description": "Will be used as the sensor name in the Home app."
                         },
                         "target": {
                             "type": "string",
@@ -79,9 +76,8 @@
                         },
                         "pingUseArp": {
                             "type": "boolean",
-                            "title": "Use ARP lookup",
+                            "title": "Use ARP lookup instead of ICMP ping",
                             "required": false,
-                            "description": "If set to true, ARP lookups will be used instead of ICMP pings to determine the sensor state.",
                             "placeholder": false
                         },
                         "ignoreWebhookReEnter": {
