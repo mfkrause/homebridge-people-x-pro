@@ -1,32 +1,28 @@
 {
-    "platforms": [
+    "platform": "PeoplePro",
+    "anyoneSensor" : true,
+    "nooneSensor" : false,
+    "anyoneSensorName": "Anyone",
+    "nooneSensorName": "No One",
+    "webhookPort": 51828,
+    "cacheDirectory": "./.node-persist/storage",
+    "webhookEnabled": true,
+    "people" : [
         {
-            "platform": "PeopleXPro",
+            "name" : "Pete",
+            "target" : "PetesiPhone",
             "threshold" : 15,
-            "anyoneSensor" : true,
-            "nooneSensor" : false,
-            "webhookPort": 51828,
-            "cacheDirectory": "./.node-persist/storage",
             "pingInterval": 10000,
-            "ignoreReEnterExitSeconds": 0,
-            "people" : [
-                {
-                    "name" : "Pete",
-                    "target" : "PetesiPhone",
-                    "threshold" : 15,
-                    "pingInterval": 10000,
-                    "ignoreReEnterExitSeconds": 0,
-                    "pingUseArp": false
-                },
-                {
-                    "name" : "Someone Else",
-                    "target" : "192.168.1.68",
-                    "threshold" : 15,
-                    "pingInterval": 10000,
-                    "ignoreReEnterExitSeconds": 0,
-                    "pingUseArp": false
-                }
-            ]
+            "ignoreWebhookReEnter": 0,
+            "pingUseArp": true
+        },
+        {
+            "name" : "Someone Else",
+            "target" : "192.168.1.68",
+            "threshold" : 15,
+            "pingInterval": 10000,
+            "pingUseArp": false,
+            "excludeFromWebhook": true
         }
     ]
 }

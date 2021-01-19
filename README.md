@@ -1,32 +1,44 @@
 # homebridge-people-pro
 
 This is a plugin for [homebridge](https://github.com/nfarina/homebridge). It monitors who is at home, based on their smartphone being seen on the network recently.
-If you use the EVE.app you can also see the presence history of every person sensor (powered by fakegato).
+If you use the Elgato Eve app you can also see the history of every person sensor (powered by (fakegato)[https://github.com/simont77/fakegato-history]).
 
-It can also receive webhooks sent by location-aware mobile apps (such as [Locative](https://my.locative.io), which can use iBeacons and geofencing to provide faster and more accurate location information.
+It can also optionally spin up a webserver and receive webhooks sent by location-aware mobile apps (such as [Locative](https://my.locative.io), which can use iBeacons and geofencing to provide faster and more accurate location information.
 
 # Installation
 
 1.  Install homebridge (if not already installed) using: `npm install -g homebridge`
 2.  Install this plugin using: `npm install -g homebridge-people-pro`
-3.  Update your configuration file. See below for a sample.
+3.  Update your configuration file (see below).
 
 # Example Configuration
 
-See `config-sample.json` for an example config.
+See `config-sample.json` for an example config. This plugin can also be configured through a GUI like (homebridge-config-ui-x)[https://github.com/oznu/homebridge-config-ui-x].
 
-| Parameter                  | Note                                                                                                                                                                                         |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `target`                   | may be either a hostname or IP address                                                                                                                                                       |
-| `name`                     | a human-readable name for your sensor                                                                                                                                                        |
-| `threshold`                | optional, in minutes, default: 15                                                                                                                                                            |
-| `anyoneSensor`             | optional, default: true                                                                                                                                                                      |
-| `nooneSensor`              | optional, default: false                                                                                                                                                                     |
-| `webhookPort`              | optional, default: 51828                                                                                                                                                                     |
-| `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                 |
-| `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 the ping/arp mechanism will not be used                                                                                              |
-| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping                                                                                                                        |
-| `ignoreReEnterExitSeconds` | optional, in seconds, default: 0, if set to 0 every enter/exit will trigger state change otherwise the state will only change if no re-enter/exit occurs in specified number of seconds      |
+## Platform Configuration
+
+| Parameter                  | Note                                                                                                                                                                                                |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `anyoneSensor`             | optional, default: true                                                                                                                                                                             |
+| `anyoneSensorName`         | optional, default: "Anyone"                                                                                                                                                                         |
+| `nooneSensor`              | optional, default: false                                                                                                                                                                            |
+| `nooneSensorName`          | optional, default: "No One"                                                                                                                                                                         |
+| `webhookEnabled`           | optional, default: false, enable webhook functionality / webserver                                                                                                                                  |
+| `webhookPort`              | optional, default: 51828                                                                                                                                                                            |
+| `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                        |
+| `people`                   | array of objects of the sensors / people to set-up, see below for configuration of every sensor                                                                                                     |
+
+## Sensors / People Configuration
+
+| Parameter                  | Note                                                                                                                                                                                                |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `target`                   | may be either a hostname or IP address                                                                                                                                                              |
+| `name`                     | a human-readable name for your sensor                                                                                                                                                               |
+| `threshold`                | optional, in minutes, default: 15                                                                                                                                                                   |
+| `pingInterval`             | optional, in milliseconds, default: 10000, if set to -1 the ping/arp mechanism will not be used                                                                                                     |
+| `pingUseArp`               | optional, default: false, use ARP lookup tables instead of ICMP ping                                                                                                                                |
+| `ignoreWebhookReEnter`     | optional, in seconds, default: 0, if set to 0 every webhook re-enter/exit will trigger state change; otherwise the state will only change if no re-enter/exit occurs in specified number of seconds |
+| `excludeFromWebhook`       | optional, default: false, if set to true, this sensor won't be able to be managed through webhooks / will ignore webhook requests                                                                   |
 
 # How it works
 
@@ -57,7 +69,7 @@ Apps like [Locative](https://my.locative.io) range for iBeacons and geofences by
 
 To use this plugin with one of these apps, configure your region and set the HTTP push to `http://youripaddress:51828/?sensor=[name]&state=true` for arrival, and `http://youripaddress:51828/?sensor=[name]&state=false` for departure, where `[name]` is the name of the person the device belongs to as specified in your config under `people`. *Note:* you may need to enable port forwarding on your router to accomplish this.
 
-By default homebridge-people-pro listens on port 51828 for updates. This can be changed by setting `webhookPort` in your homebridge `config.json`.
+If webhook functionality is enabled (set `webhookEnabled` to `true` in your homebridge `config.json`), homebridge-people-pro listens on port 51828 for updates. This can be changed using the setting `webhookPort` in your homebridge config.
 
 # Notes
 

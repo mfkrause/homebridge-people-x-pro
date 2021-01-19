@@ -1,0 +1,126 @@
+{
+    "pluginAlias": "PeoplePro",
+    "pluginType": "platform",
+    "singular": true,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "anyoneSensor": {
+                "type": "boolean",
+                "title": "Enable anyone sensor",
+                "required": false,
+                "placeholder": true
+            },
+            "anyoneSensorName": {
+                "type": "string",
+                "title": "Name of the anyone sensor",
+                "required": false,
+                "placeholder": "Anyone",
+                "condition": {
+                    "functionBody": "return model.anyoneSensor === true;"
+                }
+            },
+            "nooneSensor": {
+                "type": "boolean",
+                "title": "Enable noone sensor",
+                "required": false,
+                "placeholder": false
+            },
+            "nooneSensorName": {
+                "type": "string",
+                "title": "Name of the no one sensor",
+                "required": false,
+                "placeholder": "No One",
+                "condition": {
+                    "functionBody": "return model.nooneSensor === true;"
+                }
+            },
+            "webhookEnabled": {
+                "type": "boolean",
+                "title": "Enable webhook/webserver",
+                "required": false,
+                "description": "Enables the webserver for the webhook functionality.",
+                "placeholder": false
+            },
+            "webhookPort": {
+                "type": "integer",
+                "title": "Webhook port",
+                "required": false,
+                "description": "The port the webserver for the webhooks will run on.",
+                "placeholder": 51828,
+                "condition": {
+                    "functionBody": "return model.webhookEnabled === true;"
+                }
+            },
+            "cacheDirectory": {
+                "type": "string",
+                "title": "Cache directory",
+                "required": false,
+                "description": "Directory the persistent cache will be saved in.",
+                "placeholder": "./.node-persist/storage"
+            },
+            "people": {
+                "type": "array",
+                "title": "People / Sensors",
+                "required": true,
+                "description": "Array of the people / targets to set-up as sensors.",
+                "default": [],
+                "items": {
+                    "type": "object",
+                    "title": "Person / Target",
+                    "description": "A person / target to set-up as a sensor.",
+                    "properties": {
+                        "name": {
+                           "type": "string",
+                            "title": "Sensor Name",
+                            "required": true
+                        },
+                        "target": {
+                            "type": "string",
+                            "title": "Target",
+                            "required": true,
+                            "description": "IP address or hostname which will be targeted."
+                        },
+                        "threshold": {
+                            "type": "integer",
+                            "title": "Threshold (min)",
+                            "required": false,
+                            "description": "Threshold in minutes for the last time this person was seen.",
+                            "placeholder": 15
+                        },
+                        "pingInterval": {
+                            "type": "integer",
+                            "title": "Ping Interval (ms)",
+                            "required": false,
+                            "description": "Interval in milliseconds for the ping (or arp, if configured) mechanism. If set to -1, the ping/arp mechanism will be disabled.",
+                            "placeholder": 10000
+                        },
+                        "pingUseArp": {
+                            "type": "boolean",
+                            "title": "Use ARP lookup instead of ICMP ping",
+                            "required": false,
+                            "placeholder": false
+                        },
+                        "excludeFromWebhook": {
+                            "type": "boolean",
+                            "title": "Exclude from webhook",
+                            "required": false,
+                            "description": "If set to true, this sensor can't be updated through webhooks as the requests will be ignored.",
+                            "placeholder": false
+                        },
+                        "ignoreWebhookReEnter": {
+                            "type": "integer",
+                            "title": "Ignore webhook re-enter (s)",
+                            "required": false,
+                            "description": "Amount of seconds a webhook re-enter or re-exit is ignored for. If set to 0, every webhook re-enter/exit will trigger state change; otherwise the state will only change if no re-enter/exit occurs in the specified number of seconds.",
+                            "placeholder": 0,
+                            "condition": {
+                                "functionBody": "return model.people[arrayIndices].excludeFromWebhook !== true;"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
