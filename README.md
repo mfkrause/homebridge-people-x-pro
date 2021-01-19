@@ -1,7 +1,7 @@
 # homebridge-people-pro
 
 This is a plugin for [homebridge](https://github.com/nfarina/homebridge). It monitors who is at home, based on their smartphone being seen on the network recently.
-If you use the Elgato Eve app you can also see the history of every person sensor (powered by (fakegato)[https://github.com/simont77/fakegato-history]).
+If you use the Elgato Eve app you can also see the history of every person sensor (powered by [fakegato](https://github.com/simont77/fakegato-history]).
 
 It can also optionally spin up a webserver and receive webhooks sent by location-aware mobile apps (such as [Locative](https://my.locative.io), which can use iBeacons and geofencing to provide faster and more accurate location information.
 
@@ -13,7 +13,7 @@ It can also optionally spin up a webserver and receive webhooks sent by location
 
 # Example Configuration
 
-See `config-sample.json` for an example config. This plugin can also be configured through a GUI like (homebridge-config-ui-x)[https://github.com/oznu/homebridge-config-ui-x].
+See `config-sample.json` for an example config. This plugin can also be configured through a GUI like [homebridge-config-ui-x](https://github.com/oznu/homebridge-config-ui-x).
 
 ## Platform Configuration
 
