@@ -19,6 +19,13 @@
                 "description": "Enables the 'noone' sensor.",
                 "placeholder": false
             },
+            "webhookEnabled": {
+                "type": "boolean",
+                "title": "Enable webhook/webserver",
+                "required": false,
+                "description": "Enables the webserver for the webhook functionality.",
+                "placeholder": false
+            },
             "webhookPort": {
                 "type": "integer",
                 "title": "Webhook port",
@@ -32,13 +39,6 @@
                 "required": false,
                 "description": "Directory the persistent cache will be saved in.",
                 "placeholder": "./.node-persist/storage"
-            },
-            "webhookEnabled": {
-                "type": "boolean",
-                "title": "Enable webhook/webserver",
-                "required": false,
-                "description": "Enables the webserver for the webhook functionality.",
-                "placeholder": false
             },
             "people": {
                 "type": "array",
