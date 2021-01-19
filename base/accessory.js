@@ -13,6 +13,7 @@ class PeopleProAccessory {
     this.log = log;
     this.name = config.name;
     this.target = config.target;
+    this.excludedFromWebhook = config.excludedFromWebhook;
     this.platform = platform;
     this.threshold = config.threshold || this.platform.threshold;
     this.pingInterval = config.pingInterval || this.platform.pingInterval;
@@ -65,15 +66,28 @@ class PeopleProAccessory {
     }
   }
 
+  /**
+   * Encodes a given bool state and returns it back as a Characteristic
+   * @param {bool} state The state as a bool
+   * @returns {object} The state as a Characteristic
+   */
   static encodeState(state) {
     if (state) return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
     return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
   }
 
+  /**
+   * Gets the current state from the cache
+   * @param {function} callback The function to callback with the current state
+   */
   getState(callback) {
     callback(null, PeopleProAccessory.encodeState(this.stateCache));
   }
 
+  /**
+   * Gets the date of the last activation / successful ping of this sensor
+   * @param {function} callback The function to callback with the last activation time
+   */
   getLastActivation(callback) {
     const lastSeenUnix = this.platform.storage.getItemSync(`lastSuccessfulPing_${this.target}`);
     if (lastSeenUnix) {
@@ -82,16 +96,28 @@ class PeopleProAccessory {
     }
   }
 
+  /**
+   * Identifies / logs the name of this accessory
+   * @param {function} callback Fnction to callback once finished
+   */
   identify(callback) {
     this.log(`Identify: ${this.name}`);
     callback();
   }
 
+  /**
+   * Initiates the state cache with the current state
+   */
   initStateCache() {
     const isActive = this.isActive();
     this.stateCache = isActive;
   }
 
+  /**
+   * Checks if the target of this accessory/sensor is currently active based on last successful ping
+   * and configured threshold
+   * @returns {bool} True if the target is currently active, false if not
+  */
   isActive() {
     const lastSeenUnix = this.platform.storage.getItemSync(`lastSuccessfulPing_${this.target}`);
     if (lastSeenUnix) {
@@ -102,6 +128,10 @@ class PeopleProAccessory {
     return false;
   }
 
+  /**
+   * Pings or, if configured, ARP lookups the target of this accessory/sensor and updated the state
+   * accordingly. Gets called on a regular basis through an interval at the configured interval time
+   */
   pingFunction() {
     if (this.webhookIsOutdated()) {
       if (this.pingUseArp) {
@@ -139,6 +169,10 @@ class PeopleProAccessory {
     }
   }
 
+  /**
+   * Checks if the last received webhook is outdated based on the configured threshold
+   * @returns {bool} True if the webhook is outdated, false if it is not
+   */
   webhookIsOutdated() {
     const lastWebhookUnix = this.platform.storage.getItemSync(`lastWebhook_${this.target}`);
     if (lastWebhookUnix) {
@@ -149,6 +183,11 @@ class PeopleProAccessory {
     return true;
   }
 
+  /**
+   * Checks if the last successful ping occured after the last webhook
+   * @returns {bool} True if the last successful ping occured after the last webhook, false if
+   * it did not
+   */
   successfulPingOccurredAfterWebhook() {
     const lastSuccessfulPing = this.platform.storage.getItemSync(`lastSuccessfulPing_${this.target}`);
     if (!lastSuccessfulPing) {
@@ -163,6 +202,10 @@ class PeopleProAccessory {
     return lastSuccessfulPingMoment.isAfter(lastWebhookMoment);
   }
 
+  /**
+   * Updates the state of the sensor and adds to the fakegato history
+   * @param {bool} newState The new state as a bool
+   */
   setNewState(newState) {
     const oldState = this.stateCache;
     if (oldState !== newState) {

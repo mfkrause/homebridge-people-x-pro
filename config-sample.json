@@ -2,18 +2,17 @@
     "platforms": [
         {
             "platform": "PeopleXPro",
-            "threshold" : 15,
             "anyoneSensor" : true,
             "nooneSensor" : false,
             "webhookPort": 51828,
             "cacheDirectory": "./.node-persist/storage",
+            "webhookEnabled": "true",
             "people" : [
                 {
                     "name" : "Pete",
                     "target" : "PetesiPhone",
                     "threshold" : 15,
                     "pingInterval": 10000,
-                    "webhookEnabled": true,
                     "ignoreWebhookReEnter": 0,
                     "pingUseArp": true
                 },
@@ -22,7 +21,8 @@
                     "target" : "192.168.1.68",
                     "threshold" : 15,
                     "pingInterval": 10000,
-                    "pingUseArp": false
+                    "pingUseArp": false,
+                    "excludeFromWebhook": true
                 }
             ]
         }

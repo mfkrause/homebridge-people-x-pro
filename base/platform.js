@@ -30,11 +30,15 @@ class PeopleProPlatform {
   accessories(callback) {
     this.accessories = [];
     this.peopleProAccessories = [];
+
+    // Get all people / targets and add them to accessories
     for (let i = 0; i < this.people.length; i += 1) {
       const peopleProAccessory = new PeopleProAccessory(this.log, this.people[i], this);
       this.accessories.push(peopleProAccessory);
       this.peopleProAccessories.push(peopleProAccessory);
     }
+
+    // Add "anyone" and "no one" sensors / accessories
     if (this.anyoneSensor) {
       this.peopleAnyOneAccessory = new PeopleProAllAccessory(this.log, SENSOR_ANYONE, this);
       this.accessories.push(this.peopleAnyOneAccessory);
@@ -45,64 +49,72 @@ class PeopleProPlatform {
     }
     callback(this.accessories);
 
+    // Start webhook server if enabled
     if (this.webhookEnabled) {
       this.startServer();
     }
   }
 
+  /**
+   *  Spins up a webserver for the webhook functionality.
+   *
+   *  HTTP webserver code influenced by benzman81's great homebridge-http-webhooks plugin:
+   *  https://github.com/benzman81/homebridge-http-webhooks
+   */
   startServer() {
-    //
-    // HTTP webserver code influenced by benzman81's great
-    // homebridge-http-webhooks homebridge plugin.
-    // https://github.com/benzman81/homebridge-http-webhooks
-    //
-
-    // Start the HTTP webserver
     http.createServer(((request, response) => {
       const theUrl = request.url;
       const theUrlParts = url.parse(theUrl, true);
       const theUrlParams = theUrlParts.query;
       let body = [];
       request.on('error', ((err) => {
-        this.log('WebHook error: %s.', err);
+        this.log('Webhook error: %s.', err);
       })).on('data', (chunk) => {
         body.push(chunk);
       }).on('end', (() => {
         body = Buffer.concat(body).toString();
 
         response.on('error', (err) => {
-          this.log('WebHook error: %s.', err);
+          this.log('Webhook error: %s.', err);
         });
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
 
         if (!theUrlParams.sensor || !theUrlParams.state) {
+          // Received invalid request
           response.statusCode = 404;
           response.setHeader('Content-Type', 'text/plain');
-          const errorText = 'WebHook error: No sensor or state specified in request.';
+          const errorText = 'Webhook error: No sensor or state specified in request.';
           this.log(errorText);
           response.write(errorText);
           response.end();
         } else {
           const sensor = theUrlParams.sensor.toLowerCase();
           const newState = (theUrlParams.state === 'true');
-          this.log(`Received hook for ${sensor} -> ${newState}`);
+          this.log(`Received webhook for ${sensor} -> ${newState}`);
           const responseBody = {
             success: true,
           };
+
+          // Loop through sensors to find which one to update
+          // Will always return 200, even if sensor can't be found due to security reasons
           for (let i = 0; i < this.peopleProAccessories.length; i += 1) {
             const peopleProAccessory = this.peopleProAccessories[i];
             const { target } = peopleProAccessory;
             if (peopleProAccessory.name.toLowerCase() === sensor) {
-              this.clearWebhookQueueForTarget(target);
-              this.webhookQueue.push({
-                target,
-                newState,
-                timeoutvar: setTimeout((() => {
-                  this.runWebhookFromQueueForTarget(target);
-                }), peopleProAccessory.ignoreWebhookReEnter * 1000),
-              });
+              // Check if this sensor is excluded from webhook functionality; if so, ignore request
+              if (peopleProAccessory.excludedFromWebhook !== true) {
+                // Update webhook queue
+                this.clearWebhookQueueForTarget(target);
+                this.webhookQueue.push({
+                  target,
+                  newState,
+                  timeoutvar: setTimeout((() => {
+                    this.runWebhookFromQueueForTarget(target);
+                  }), peopleProAccessory.ignoreWebhookReEnter * 1000),
+                });
+              }
               break;
             }
           }
@@ -111,9 +123,13 @@ class PeopleProPlatform {
         }
       }));
     })).listen(this.webhookPort);
-    this.log("WebHook: Started server on port '%s'.", this.webhookPort);
+    this.log("Webhook: Started webserver on port '%s'.", this.webhookPort);
   }
 
+  /**
+   * Clears the current webhook queue / intervals for the given target
+   * @param {string} target The target to clear the webhook queue for
+   */
   clearWebhookQueueForTarget(target) {
     for (let i = 0; i < this.webhookQueue.length; i += 1) {
       const webhookQueueEntry = this.webhookQueue[i];
@@ -125,12 +141,18 @@ class PeopleProPlatform {
     }
   }
 
+  /**
+   * Executes the webhook in the queue for the given target; called through an interval at
+   * ignoreWebhookReEnter * 1000 from the webserver
+   * @param {string} target The target to run the webhook for
+   */
   runWebhookFromQueueForTarget(target) {
     for (let i = 0; i < this.webhookQueue.length; i += 1) {
       const webhookQueueEntry = this.webhookQueue[i];
       if (webhookQueueEntry.target === target) {
-        this.log(`Running hook for ${target} -> ${webhookQueueEntry.newState}`);
+        this.log(`Running webhook for ${target} -> ${webhookQueueEntry.newState}`);
         this.webhookQueue.splice(i, 1);
+        // Update sensor
         this.storage.setItemSync(`lastWebhook_${target}`, Date.now());
         this.getPeopleProAccessoryForTarget(target).setNewState(webhookQueueEntry.newState);
         break;
@@ -138,6 +160,11 @@ class PeopleProPlatform {
     }
   }
 
+  /**
+   * Get a PeopleProAccessory based on a given target
+   * @param {string} target IP address or hostname of the wanted PeopleProAccessory
+   * @returns {object} The wanted PeopleProAccessory (or null if it couldn't be found)
+   */
   getPeopleProAccessoryForTarget(target) {
     for (let i = 0; i < this.peopleProAccessories.length; i += 1) {
       const peopleProAccessory = this.peopleProAccessories[i];
@@ -149,6 +176,10 @@ class PeopleProPlatform {
   }
 }
 
+/**
+ * Set homebridge reference for platform, called from /index.js
+ * @param {object} homebridgeRef The homebridge reference to use in the platform
+ */
 PeopleProPlatform.setHomebridge = (homebridgeRef) => {
   homebridge = homebridgeRef;
 };

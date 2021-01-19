@@ -4,6 +4,7 @@ const {
   PeopleProAllAccessory,
 } = require('./base');
 
+/* Register platform and accessories, set global variables */
 module.exports = (homebridge) => {
   global.Service = homebridge.hap.Service;
   global.Characteristic = homebridge.hap.Characteristic;
