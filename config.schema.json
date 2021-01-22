@@ -20,6 +20,19 @@
                     "functionBody": "return model.anyoneSensor === true;"
                 }
             },
+            "anyoneSensorType": {
+                "title": "Type of the anyone sensor",
+                "type": "string",
+                "default": "motion",
+                "oneOf": [
+                { "title": "Motion Sensor", "enum": ["motion"] },
+                { "title": "Occupancy Sensor", "enum": ["occupancy"] }
+                ],
+                "required": true,
+                "condition": {
+                    "functionBody": "return model.anyoneSensor === true;"
+                }
+            },
             "nooneSensor": {
                 "type": "boolean",
                 "title": "Enable noone sensor",
@@ -31,6 +44,19 @@
                 "title": "Name of the no one sensor",
                 "required": false,
                 "placeholder": "No One",
+                "condition": {
+                    "functionBody": "return model.nooneSensor === true;"
+                }
+            },
+            "nooneSensorType": {
+                "title": "Type of the no one sensor",
+                "type": "string",
+                "default": "motion",
+                "oneOf": [
+                { "title": "Motion Sensor", "enum": ["motion"] },
+                { "title": "Occupancy Sensor", "enum": ["occupancy"] }
+                ],
+                "required": true,
                 "condition": {
                     "functionBody": "return model.nooneSensor === true;"
                 }

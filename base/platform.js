@@ -39,13 +39,13 @@ class PeopleProPlatform {
     // Add "anyone" and "no one" sensors / accessories
     if (this.anyoneSensor) {
       this.peopleAnyOneAccessory = new PeopleProAllAccessory(
-        this.log, this.config, this.anyoneSensorName, this,
+        this.log, this.config, this.anyoneSensorName, this, 'anyone',
       );
       this.accessories.push(this.peopleAnyOneAccessory);
     }
     if (this.nooneSensor) {
       this.peopleNoOneAccessory = new PeopleProAllAccessory(
-        this.log, this.config, this.nooneSensorName, this,
+        this.log, this.config, this.nooneSensorName, this, 'noone',
       );
       this.accessories.push(this.peopleNoOneAccessory);
     }

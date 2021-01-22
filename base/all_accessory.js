@@ -1,14 +1,14 @@
 class PeopleProAllAccessory {
-  constructor(log, config, name, platform) {
+  constructor(log, config, name, platform, peopleType) {
     this.log = log;
     this.config = config;
     this.name = name;
     this.type = 'motion';
-    if (typeof config.type !== 'undefined' && config.type !== null) {
-      if (typeof config.type !== 'string' || (config.type !== 'motion' && config.type !== 'occupancy')) {
-        log(`Type "${config.type}" for sensor ${config.name} is invalid. Defaulting to "motion".`);
+    if (typeof config[`${peopleType}SensorType`] !== 'undefined' && config[`${peopleType}SensorType`] !== null) {
+      if (typeof config[`${peopleType}SensorType`] !== 'string' || (config[`${peopleType}SensorType`] !== 'motion' && config[`${peopleType}SensorType`] !== 'occupancy')) {
+        log(`Type "${config[`${peopleType}SensorType`]}" for sensor ${this.name} is invalid. Defaulting to "motion".`);
       } else {
-        this.type = config.type;
+        this.type = config[`${peopleType}SensorType`];
       }
     }
     this.platform = platform;
