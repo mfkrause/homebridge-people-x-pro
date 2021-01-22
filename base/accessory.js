@@ -157,7 +157,7 @@ class PeopleProAccessory {
    * @param {function} callback The function to callback with the current state
    */
   getState(callback) {
-    callback(null, PeopleProAccessory.encodeState(this.stateCache));
+    callback(null, this.encodeState(this.stateCache));
   }
 
   /**
@@ -287,7 +287,7 @@ class PeopleProAccessory {
     if (oldState !== newState) {
       this.stateCache = newState;
       this.service.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(PeopleProAccessory.encodeState(newState));
+        .updateValue(this.encodeState(newState));
 
       if (this.platform.peopleAnyOneAccessory) {
         this.platform.peopleAnyOneAccessory.refreshState();

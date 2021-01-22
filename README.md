@@ -25,7 +25,6 @@ See `config-sample.json` for an example config. This plugin can also be configur
 | `nooneSensorName`          | optional, default: "No One"                                                                                                                                                                         |
 | `webhookEnabled`           | optional, default: false, enable webhook functionality / webserver                                                                                                                                  |
 | `webhookPort`              | optional, default: 51828                                                                                                                                                                            |
-| `cacheDirectory`           | optional, default: "./.node-persist/storage"                                                                                                                                                        |
 | `people`                   | array of objects of the sensors / people to set-up, see below for configuration of every sensor                                                                                                     |
 
 ## Sensors / People Configuration

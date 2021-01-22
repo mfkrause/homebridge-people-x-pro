@@ -17,12 +17,11 @@ class PeopleProPlatform {
     this.nooneSensorName = config.nooneSensorName || 'No One';
     this.webhookPort = config.webhookPort || 51828;
     this.webhookEnabled = ((typeof (config.webhookEnabled) !== 'undefined' && config.webhookEnabled !== null) ? config.webhookEnabled : false);
-    this.cacheDirectory = config.cacheDirectory || homebridge.user.persistPath();
     this.pingInterval = config.pingInterval || 10000;
     this.ignoreWebhookReEnter = config.ignoreWebhookReEnter || 0;
     this.people = config.people;
     this.storage = storage;
-    this.storage.initSync({ dir: this.cacheDirectory });
+    this.storage.initSync({ dir: `${homebridge.user.storagePath()}/plugin-persist/homebridge-people-pro` });
     this.webhookQueue = [];
   }
 
