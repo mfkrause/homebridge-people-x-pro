@@ -14,7 +14,8 @@
             "threshold" : 15,
             "pingInterval": 10000,
             "ignoreWebhookReEnter": 0,
-            "pingUseArp": true
+            "pingUseArp": true,
+            "type": "switch"
         },
         {
             "name" : "Someone Else",

@@ -12,6 +12,14 @@ class PeopleProAccessory {
   constructor(log, config, platform) {
     this.log = log;
     this.name = config.name;
+    this.type = 'motion';
+    if (typeof config.type !== 'undefined' && config.type !== null) {
+      if (typeof config.type !== 'string' || (config.type !== 'motion' && config.type !== 'occupancy')) {
+        log(`Type "${config.type}" for sensor ${config.name} is invalid. Defaulting to "motion".`);
+      } else {
+        this.type = config.type;
+      }
+    }
     this.target = config.target;
     this.excludedFromWebhook = config.excludedFromWebhook;
     this.platform = platform;
@@ -20,44 +28,58 @@ class PeopleProAccessory {
     this.stateCache = false;
     this.pingUseArp = ((typeof (config.pingUseArp) !== 'undefined' && config.pingUseArp !== null) ? config.pingUseArp : false);
 
-    this.service = new Service.MotionSensor(this.name);
-    this.service
-      .getCharacteristic(Characteristic.MotionDetected)
-      .on('get', this.getState.bind(this));
+    // Set services and characteristics based on configured sensor type
+    if (this.type === 'motion') {
+      this.service = new Service.MotionSensor(this.name);
+      this.service
+        .getCharacteristic(Characteristic.MotionDetected)
+        .on('get', this.getState.bind(this));
 
-    this.service.addCharacteristic(LastActivationCharacteristic);
-    this.service
-      .getCharacteristic(LastActivationCharacteristic)
-      .on('get', this.getLastActivation.bind(this));
+      this.service.addCharacteristic(LastActivationCharacteristic);
+      this.service
+        .getCharacteristic(LastActivationCharacteristic)
+        .on('get', this.getLastActivation.bind(this));
 
-    this.service.addCharacteristic(SensitivityCharacteristic);
-    this.service
-      .getCharacteristic(SensitivityCharacteristic)
-      .on('get', (callback) => {
-        callback(null, 4);
+      this.service.addCharacteristic(SensitivityCharacteristic);
+      this.service
+        .getCharacteristic(SensitivityCharacteristic)
+        .on('get', (callback) => {
+          callback(null, 4);
+        });
+
+      this.service.addCharacteristic(DurationCharacteristic);
+      this.service
+        .getCharacteristic(DurationCharacteristic)
+        .on('get', (callback) => {
+          callback(null, 5);
+        });
+
+      this.accessoryService = new Service.AccessoryInformation();
+      this.accessoryService
+        .setCharacteristic(Characteristic.Name, this.name)
+        .setCharacteristic(Characteristic.SerialNumber, `hps-${this.name.toLowerCase()}`)
+        .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
+
+      this.historyService = new FakeGatoHistoryService('motion', {
+        displayName: this.name,
+        log: this.log,
+      },
+      {
+        storage: 'fs',
+        disableTimer: true,
       });
+    } else {
+      this.accessoryService = new Service.AccessoryInformation();
+      this.accessoryService
+        .setCharacteristic(Characteristic.Name, this.name);
 
-    this.service.addCharacteristic(DurationCharacteristic);
-    this.service
-      .getCharacteristic(DurationCharacteristic)
-      .on('get', (callback) => {
-        callback(null, 5);
-      });
-
-    this.accessoryService = new Service.AccessoryInformation();
-    this.accessoryService
-      .setCharacteristic(Characteristic.Name, this.name)
-      .setCharacteristic(Characteristic.SerialNumber, `hps-${this.name.toLowerCase()}`)
-      .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
-
-    this.historyService = new FakeGatoHistoryService('motion', {
-      displayName: this.name,
-      log: this.log,
-    },
-    {
-      storage: 'fs',
-      disableTimer: true,
-    });
+      if (this.type === 'occupancy') {
+        this.service = new Service.OccupancySensor(this.name);
+        this.service
+          .getCharacteristic(Characteristic.OccupancyDetected)
+          .on('get', this.getState.bind(this));
+      }
+    }
 
     this.initStateCache();
 
@@ -67,13 +89,20 @@ class PeopleProAccessory {
   }
 
   /**
-   * Encodes a given bool state and returns it back as a Characteristic
+   * Encodes a given bool state
    * @param {bool} state The state as a bool
-   * @returns {object} The state as a Characteristic
+   * @returns {object} The state as a Characteristic or int
    */
-  static encodeState(state) {
-    if (state) return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
-    return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
+  encodeState(state) {
+    if (this.type === 'motion') {
+      if (state) return 1;
+      return 0;
+    }
+    if (this.type === 'occupancy') {
+      if (state) return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
+      return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
+    }
+    return null;
   }
 
   /**
@@ -232,10 +261,12 @@ class PeopleProAccessory {
         lastWebhookMoment = moment(lastWebhook).format();
       }
 
-      this.historyService.addEntry({
-        time: moment().unix(),
-        status: (newState) ? 1 : 0,
-      });
+      if (this.type === 'motion') {
+        this.historyService.addEntry({
+          time: moment().unix(),
+          status: (newState) ? 1 : 0,
+        });
+      }
       if (this.pingUseArp) {
         this.log('Changed occupancy state for %s to %s. Last successful arp lookup %s , last webhook %s .', this.target, newState, lastSuccessfulPingMoment, lastWebhookMoment);
       } else {
