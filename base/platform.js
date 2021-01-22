@@ -10,6 +10,7 @@ let homebridge;
 class PeopleProPlatform {
   constructor(log, config) {
     this.log = log;
+    this.config = config;
     this.threshold = config.threshold || 15;
     this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : true);
     this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : false);
