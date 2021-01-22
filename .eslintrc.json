@@ -17,5 +17,7 @@
     "parserOptions": {
       "ecmaVersion": 2018
     },
-    "rules": {}
+    "rules": {
+      "max-classes-per-file": "off"
+    }
   }
