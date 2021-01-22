@@ -13,18 +13,23 @@ class PeopleProAllAccessory {
     }
     this.platform = platform;
 
-    this.service = new Service.OccupancySensor(this.name);
-    this.service
-      .getCharacteristic(Characteristic.OccupancyDetected)
-      .on('get', this.getState.bind(this));
-
     if (this.type === 'motion') {
+      this.service = new Service.MotionSensor(this.name);
+      this.service
+        .getCharacteristic(Characteristic.MotionDetected)
+        .on('get', this.getState.bind(this));
+
       this.accessoryService = new Service.AccessoryInformation();
       this.accessoryService
         .setCharacteristic(Characteristic.Name, this.name)
         .setCharacteristic(Characteristic.SerialNumber, (this.name === this.platform.nooneSensorName) ? 'hps-noone' : 'hps-all')
         .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
     } else {
+      this.service = new Service.OccupancySensor(this.name);
+      this.service
+        .getCharacteristic(Characteristic.OccupancyDetected)
+        .on('get', this.getState.bind(this));
+
       this.accessoryService = new Service.AccessoryInformation();
       this.accessoryService
         .setCharacteristic(Characteristic.Name, this.name);
