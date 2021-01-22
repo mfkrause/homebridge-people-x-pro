@@ -1,5 +1,3 @@
-const PeopleProAccessory = require('./accessory');
-
 class PeopleProAllAccessory {
   constructor(log, name, platform) {
     this.log = log;
@@ -23,7 +21,7 @@ class PeopleProAllAccessory {
    * @param {function} callback Function to callback with the current state
    */
   getState(callback) {
-    callback(null, PeopleProAccessory.encodeState(this.getStateFromCache()));
+    callback(null, this.encodeState(this.getStateFromCache()));
   }
 
   /**
@@ -67,7 +65,7 @@ class PeopleProAllAccessory {
    */
   refreshState() {
     this.service.getCharacteristic(Characteristic.OccupancyDetected)
-      .updateValue(PeopleProAccessory.encodeState(this.getStateFromCache()));
+      .updateValue(this.encodeState(this.getStateFromCache()));
   }
 
   getServices() {
