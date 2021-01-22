@@ -1,7 +1,16 @@
 class PeopleProAllAccessory {
-  constructor(log, name, platform) {
+  constructor(log, config, name, platform) {
     this.log = log;
+    this.config = config;
     this.name = name;
+    this.type = 'motion';
+    if (typeof config.type !== 'undefined' && config.type !== null) {
+      if (typeof config.type !== 'string' || (config.type !== 'motion' && config.type !== 'occupancy')) {
+        log(`Type "${config.type}" for sensor ${config.name} is invalid. Defaulting to "motion".`);
+      } else {
+        this.type = config.type;
+      }
+    }
     this.platform = platform;
 
     this.service = new Service.OccupancySensor(this.name);
@@ -9,11 +18,34 @@ class PeopleProAllAccessory {
       .getCharacteristic(Characteristic.OccupancyDetected)
       .on('get', this.getState.bind(this));
 
-    this.accessoryService = new Service.AccessoryInformation();
-    this.accessoryService
-      .setCharacteristic(Characteristic.Name, this.name)
-      .setCharacteristic(Characteristic.SerialNumber, (this.name === this.platform.nooneSensorName) ? 'hps-noone' : 'hps-all')
-      .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
+    if (this.type === 'motion') {
+      this.accessoryService = new Service.AccessoryInformation();
+      this.accessoryService
+        .setCharacteristic(Characteristic.Name, this.name)
+        .setCharacteristic(Characteristic.SerialNumber, (this.name === this.platform.nooneSensorName) ? 'hps-noone' : 'hps-all')
+        .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
+    } else {
+      this.accessoryService = new Service.AccessoryInformation();
+      this.accessoryService
+        .setCharacteristic(Characteristic.Name, this.name);
+    }
+  }
+
+  /**
+   * Encodes a given bool state
+   * @param {bool} state The state as a bool
+   * @returns {object} The state as a Characteristic or int
+   */
+  encodeState(state) {
+    if (this.type === 'motion') {
+      if (state) return 1;
+      return 0;
+    }
+    if (this.type === 'occupancy') {
+      if (state) return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
+      return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
+    }
+    return null;
   }
 
   /**
