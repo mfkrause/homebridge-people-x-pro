@@ -9,7 +9,7 @@
                 "type": "boolean",
                 "title": "Enable anyone sensor",
                 "required": false,
-                "placeholder": true
+                "default": true
             },
             "anyoneSensorName": {
                 "type": "string",
@@ -52,13 +52,6 @@
                     "functionBody": "return model.webhookEnabled === true;"
                 }
             },
-            "cacheDirectory": {
-                "type": "string",
-                "title": "Cache directory",
-                "required": false,
-                "description": "Directory the persistent cache will be saved in.",
-                "placeholder": "./.node-persist/storage"
-            },
             "people": {
                 "type": "array",
                 "title": "People / Sensors",
@@ -80,6 +73,17 @@
                             "title": "Target",
                             "required": true,
                             "description": "IP address or hostname which will be targeted."
+                        },
+                        "type": {
+                            "title": "Sensor Type",
+                            "type": "string",
+                            "default": "motion",
+                            "description": "Warning! Choosing something else than \"Motion Sensor\" will disable Fakegato / Elgato Eve History support.",
+                            "oneOf": [
+                            { "title": "Motion Sensor", "enum": ["motion"] },
+                            { "title": "Occupancy Sensor", "enum": ["occupancy"] }
+                            ],
+                            "required": true
                         },
                         "threshold": {
                             "type": "integer",

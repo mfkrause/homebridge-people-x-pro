@@ -2,16 +2,18 @@ const ping = require('ping');
 const moment = require('moment');
 const arp = require('node-arp');
 
-const {
-  LastActivationCharacteristic,
-  SensitivityCharacteristic,
-  DurationCharacteristic,
-} = require('./characteristics');
-
 class PeopleProAccessory {
   constructor(log, config, platform) {
     this.log = log;
     this.name = config.name;
+    this.type = 'motion';
+    if (typeof config.type !== 'undefined' && config.type !== null) {
+      if (typeof config.type !== 'string' || (config.type !== 'motion' && config.type !== 'occupancy')) {
+        log(`Type "${config.type}" for sensor ${config.name} is invalid. Defaulting to "motion".`);
+      } else {
+        this.type = config.type;
+      }
+    }
     this.target = config.target;
     this.excludedFromWebhook = config.excludedFromWebhook;
     this.platform = platform;
@@ -20,44 +22,111 @@ class PeopleProAccessory {
     this.stateCache = false;
     this.pingUseArp = ((typeof (config.pingUseArp) !== 'undefined' && config.pingUseArp !== null) ? config.pingUseArp : false);
 
-    this.service = new Service.MotionSensor(this.name);
-    this.service
-      .getCharacteristic(Characteristic.MotionDetected)
-      .on('get', this.getState.bind(this));
+    // Set services and characteristics based on configured sensor type
+    if (this.type === 'motion') {
+      this.service = new Service.MotionSensor(this.name);
+      this.service
+        .getCharacteristic(Characteristic.MotionDetected)
+        .on('get', this.getState.bind(this));
 
-    this.service.addCharacteristic(LastActivationCharacteristic);
-    this.service
-      .getCharacteristic(LastActivationCharacteristic)
-      .on('get', this.getLastActivation.bind(this));
+      class LastActivationCharacteristic extends Characteristic {
+        constructor() {
+          super('LastActivation', 'E863F11A-079E-48FF-8F27-9C2605A29F52');
+          this.setProps({
+            format: Characteristic.Formats.UINT32,
+            unit: Characteristic.Units.SECONDS,
+            perms: [
+              Characteristic.Perms.READ,
+              Characteristic.Perms.NOTIFY,
+            ],
+          });
+        }
+      }
 
-    this.service.addCharacteristic(SensitivityCharacteristic);
-    this.service
-      .getCharacteristic(SensitivityCharacteristic)
-      .on('get', (callback) => {
-        callback(null, 4);
+      class DurationCharacteristic extends Characteristic {
+        constructor() {
+          super('Duration', 'E863F12D-079E-48FF-8F27-9C2605A29F52');
+          this.setProps({
+            format: Characteristic.Formats.UINT16,
+            unit: Characteristic.Units.SECONDS,
+            minValue: 5,
+            maxValue: 15 * 3600,
+            validValues: [
+              5, 10, 20, 30,
+              1 * 60, 2 * 60, 3 * 60, 5 * 60, 10 * 60, 20 * 60, 30 * 60,
+              1 * 3600, 2 * 3600, 3 * 3600, 5 * 3600, 10 * 3600, 12 * 3600, 15 * 3600,
+            ],
+            perms: [
+              Characteristic.Perms.READ,
+              Characteristic.Perms.NOTIFY,
+              Characteristic.Perms.WRITE,
+            ],
+          });
+        }
+      }
+
+      class SensitivityCharacteristic extends Characteristic {
+        constructor() {
+          super('Sensitivity', 'E863F120-079E-48FF-8F27-9C2605A29F52');
+          this.setProps({
+            format: Characteristic.Formats.UINT8,
+            minValue: 0,
+            maxValue: 7,
+            validValues: [0, 4, 7],
+            perms: [
+              Characteristic.Perms.READ,
+              Characteristic.Perms.NOTIFY,
+              Characteristic.Perms.WRITE,
+            ],
+          });
+        }
+      }
+
+      this.service.addCharacteristic(LastActivationCharacteristic);
+      this.service
+        .getCharacteristic(LastActivationCharacteristic)
+        .on('get', this.getLastActivation.bind(this));
+
+      this.service.addCharacteristic(SensitivityCharacteristic);
+      this.service
+        .getCharacteristic(SensitivityCharacteristic)
+        .on('get', (callback) => {
+          callback(null, 4);
+        });
+
+      this.service.addCharacteristic(DurationCharacteristic);
+      this.service
+        .getCharacteristic(DurationCharacteristic)
+        .on('get', (callback) => {
+          callback(null, 5);
+        });
+
+      this.accessoryService = new Service.AccessoryInformation();
+      this.accessoryService
+        .setCharacteristic(Characteristic.Name, this.name)
+        .setCharacteristic(Characteristic.SerialNumber, `hps-${this.name.toLowerCase()}`)
+        .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
+
+      this.historyService = new FakeGatoHistoryService('motion', {
+        displayName: this.name,
+        log: this.log,
+      },
+      {
+        storage: 'fs',
+        disableTimer: true,
       });
+    } else {
+      this.accessoryService = new Service.AccessoryInformation();
+      this.accessoryService
+        .setCharacteristic(Characteristic.Name, this.name);
 
-    this.service.addCharacteristic(DurationCharacteristic);
-    this.service
-      .getCharacteristic(DurationCharacteristic)
-      .on('get', (callback) => {
-        callback(null, 5);
-      });
-
-    this.accessoryService = new Service.AccessoryInformation();
-    this.accessoryService
-      .setCharacteristic(Characteristic.Name, this.name)
-      .setCharacteristic(Characteristic.SerialNumber, `hps-${this.name.toLowerCase()}`)
-      .setCharacteristic(Characteristic.Manufacturer, 'Elgato');
-
-    this.historyService = new FakeGatoHistoryService('motion', {
-      displayName: this.name,
-      log: this.log,
-    },
-    {
-      storage: 'fs',
-      disableTimer: true,
-    });
+      if (this.type === 'occupancy') {
+        this.service = new Service.OccupancySensor(this.name);
+        this.service
+          .getCharacteristic(Characteristic.OccupancyDetected)
+          .on('get', this.getState.bind(this));
+      }
+    }
 
     this.initStateCache();
 
@@ -67,13 +136,20 @@ class PeopleProAccessory {
   }
 
   /**
-   * Encodes a given bool state and returns it back as a Characteristic
+   * Encodes a given bool state
    * @param {bool} state The state as a bool
-   * @returns {object} The state as a Characteristic
+   * @returns {object} The state as a Characteristic or int
    */
-  static encodeState(state) {
-    if (state) return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
-    return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
+  encodeState(state) {
+    if (this.type === 'motion') {
+      if (state) return 1;
+      return 0;
+    }
+    if (this.type === 'occupancy') {
+      if (state) return Characteristic.OccupancyDetected.OCCUPANCY_DETECTED;
+      return Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
+    }
+    return null;
   }
 
   /**
@@ -81,7 +157,7 @@ class PeopleProAccessory {
    * @param {function} callback The function to callback with the current state
    */
   getState(callback) {
-    callback(null, PeopleProAccessory.encodeState(this.stateCache));
+    callback(null, this.encodeState(this.stateCache));
   }
 
   /**
@@ -211,7 +287,7 @@ class PeopleProAccessory {
     if (oldState !== newState) {
       this.stateCache = newState;
       this.service.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(PeopleProAccessory.encodeState(newState));
+        .updateValue(this.encodeState(newState));
 
       if (this.platform.peopleAnyOneAccessory) {
         this.platform.peopleAnyOneAccessory.refreshState();
@@ -232,10 +308,12 @@ class PeopleProAccessory {
         lastWebhookMoment = moment(lastWebhook).format();
       }
 
-      this.historyService.addEntry({
-        time: moment().unix(),
-        status: (newState) ? 1 : 0,
-      });
+      if (this.type === 'motion') {
+        this.historyService.addEntry({
+          time: moment().unix(),
+          status: (newState) ? 1 : 0,
+        });
+      }
       if (this.pingUseArp) {
         this.log('Changed occupancy state for %s to %s. Last successful arp lookup %s , last webhook %s .', this.target, newState, lastSuccessfulPingMoment, lastWebhookMoment);
       } else {

@@ -5,7 +5,6 @@
     "anyoneSensorName": "Anyone",
     "nooneSensorName": "No One",
     "webhookPort": 51828,
-    "cacheDirectory": "./.node-persist/storage",
     "webhookEnabled": true,
     "people" : [
         {
@@ -14,7 +13,8 @@
             "threshold" : 15,
             "pingInterval": 10000,
             "ignoreWebhookReEnter": 0,
-            "pingUseArp": true
+            "pingUseArp": true,
+            "type": "switch"
         },
         {
             "name" : "Someone Else",
