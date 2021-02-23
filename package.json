@@ -1,6 +1,6 @@
 {
   "name": "homebridge-people-pro",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "Homebridge plugin that provides details of who is in a Home + History (powered by fakegato)",
   "keywords": [
     "homebridge-plugin"
