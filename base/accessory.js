@@ -169,6 +169,8 @@ class PeopleProAccessory {
     if (lastSeenUnix) {
       const lastSeenMoment = moment(lastSeenUnix).unix();
       callback(null, lastSeenMoment - this.historyService.getInitialTime());
+    } else {
+      callback(null, 0);
     }
   }
 
