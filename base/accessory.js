@@ -1,4 +1,6 @@
 const ping = require('ping');
+const util = require('util');
+const dns = require('dns');
 const moment = require('moment');
 const arp = require('node-arp');
 
@@ -15,6 +17,12 @@ class PeopleProAccessory {
       }
     }
     this.target = config.target;
+    if (config.enableCustomDns !== false) {
+      this.customDns = config.customDns || false;
+      if (typeof this.customDns !== 'boolean' && !Array.isArray(this.customDns)) {
+        this.customDns = [this.customDns];
+      }
+    } else this.customDns = false;
     this.excludedFromWebhook = config.excludedFromWebhook;
     this.platform = platform;
     this.threshold = config.threshold || this.platform.threshold;
@@ -208,12 +216,24 @@ class PeopleProAccessory {
 
   /**
    * Pings or, if configured, ARP lookups the target of this accessory/sensor and updated the state
-   * accordingly. Gets called on a regular basis through an interval at the configured interval time
+   * accordingly. Gets called on a regular basis through an interval at the configured interval
+   * time. If configured, looks up the given target hostname on a custom DNS server first.
    */
-  pingFunction() {
+  async pingFunction() {
     if (this.webhookIsOutdated()) {
+      let { target } = this;
+      if (this.customDns !== false) {
+        try {
+          dns.setServers(this.customDns);
+          const records = await util.promisify(dns.resolve)(this.target, 'A');
+          [target] = records;
+        } catch (e) {
+          console.error(e);
+          return;
+        }
+      }
       if (this.pingUseArp) {
-        arp.getMAC(this.target, (err, mac) => {
+        arp.getMAC(target, (err, mac) => {
           let state = false;
           if (!err && /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac)) state = true;
 
@@ -229,7 +249,7 @@ class PeopleProAccessory {
           setTimeout(this.pingFunction.bind(this), this.pingInterval);
         });
       } else {
-        ping.sys.probe(this.target, (state) => {
+        ping.sys.probe(target, (state) => {
           if (this.webhookIsOutdated()) {
             if (state) {
               this.platform.storage.setItemSync(`lastSuccessfulPing_${this.target}`, Date.now());
