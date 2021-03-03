@@ -100,6 +100,27 @@
                             "required": true,
                             "description": "IP address or hostname which will be targeted."
                         },
+                        "enableCustomDns": {
+                            "type": "boolean",
+                            "title": "Enable custom DNS server/s",
+                            "description": "If the target is a hostname, you can optionally configure one or multiple custom DNS servers (like a PiHole) to use for the hostname lookup.",
+                            "required": false,
+                            "placeholder": false
+                        },
+                        "customDns": {
+                            "type": "array",
+                            "title": "Custom DNS server/s",
+                            "required": false,
+                            "default": [],
+                            "items": {
+                                "type": "string",
+                                "title": "IP address",
+                                "required": true
+                            },
+                            "condition": {
+                                "functionBody": "return model.people[arrayIndices].enableCustomDns === true;"
+                            }
+                        },
                         "type": {
                             "title": "Sensor Type",
                             "type": "string",

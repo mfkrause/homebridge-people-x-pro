@@ -10,6 +10,7 @@
         {
             "name" : "Pete",
             "target" : "PetesiPhone",
+            "customDns": ["8.8.8.8", "8.8.4.4"],
             "threshold" : 15,
             "pingInterval": 10000,
             "ignoreWebhookReEnter": 0,
