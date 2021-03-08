@@ -8,18 +8,26 @@
     "webhookEnabled": true,
     "people" : [
         {
-            "name" : "Pete",
-            "target" : "PetesiPhone",
+            "name" : "Max",
+            "target" : "Max-iPhone",
             "customDns": ["8.8.8.8", "8.8.4.4"],
             "threshold" : 15,
             "pingInterval": 10000,
             "ignoreWebhookReEnter": 0,
             "pingUseArp": true,
-            "type": "switch"
+            "type": "occupancy"
         },
         {
-            "name" : "Someone Else",
+            "name" : "Someone",
             "target" : "192.168.1.68",
+            "threshold" : 15,
+            "pingInterval": 10000,
+            "pingUseArp": false,
+            "excludeFromWebhook": true
+        },
+        {
+            "name" : "Somebody",
+            "target" : "c4:81:e2:41:d5:56",
             "threshold" : 15,
             "pingInterval": 10000,
             "pingUseArp": false,

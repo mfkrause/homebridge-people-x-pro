@@ -98,7 +98,7 @@
                             "type": "string",
                             "title": "Target",
                             "required": true,
-                            "description": "IP address or hostname which will be targeted."
+                            "description": "IP address, MAC address or hostname which will be targeted."
                         },
                         "enableCustomDns": {
                             "type": "boolean",

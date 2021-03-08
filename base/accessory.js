@@ -3,6 +3,7 @@ const util = require('util');
 const dns = require('dns');
 const moment = require('moment');
 const arp = require('node-arp');
+const find = require('local-devices');
 
 class PeopleProAccessory {
   constructor(log, config, platform) {
@@ -221,19 +222,32 @@ class PeopleProAccessory {
    */
   async pingFunction() {
     if (this.webhookIsOutdated()) {
-      let { target } = this;
+      let currentTarget = false;
+      if (/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(this.target)) {
+        // Target is MAC address - get IP first from arp
+        const devices = await find();
+        for (const device of devices) {
+          if (device.mac.toLowerCase() === this.target.toLowerCase()) {
+            currentTarget = device.ip;
+            break;
+          }
+        }
+      } else currentTarget = this.target;
+
+      if (currentTarget === false) return; // Couldn't look up MAC address
+
       if (this.customDns !== false) {
         try {
           dns.setServers(this.customDns);
-          const records = await util.promisify(dns.resolve)(this.target, 'A');
-          [target] = records;
+          const records = await util.promisify(dns.resolve)(currentTarget, 'A');
+          [currentTarget] = records;
         } catch (e) {
           console.error(e);
           return;
         }
       }
       if (this.pingUseArp) {
-        arp.getMAC(target, (err, mac) => {
+        arp.getMAC(currentTarget, (err, mac) => {
           let state = false;
           if (!err && /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(mac)) state = true;
 
@@ -249,7 +263,7 @@ class PeopleProAccessory {
           setTimeout(this.pingFunction.bind(this), this.pingInterval);
         });
       } else {
-        ping.sys.probe(target, (state) => {
+        ping.sys.probe(currentTarget, (state) => {
           if (this.webhookIsOutdated()) {
             if (state) {
               this.platform.storage.setItemSync(`lastSuccessfulPing_${this.target}`, Date.now());
