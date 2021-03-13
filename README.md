@@ -29,7 +29,7 @@ See `config-sample.json` for an example configuration. This plugin can also be c
 
 | Parameter                  | Note                                                                                                                                                                                                |
 | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `anyoneSensor`             | optional, default: true                                                                                                                                                                             |
+| `anyoneSensor`             | optional, default: false                                                                                                                                                                             |
 | `anyoneSensorName`         | optional, default: "Anyone"                                                                                                                                                                         |
 | `anyoneSensorType`         | optional, default: "motion", can be one of "motion", "occupancy".                                                                                                                                   |
 | `nooneSensor`              | optional, default: false                                                                                                                                                                            |
