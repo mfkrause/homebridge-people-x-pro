@@ -12,7 +12,7 @@ class PeopleProPlatform {
     this.log = log;
     this.config = config;
     this.threshold = config.threshold || 15;
-    this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : true);
+    this.anyoneSensor = ((typeof (config.anyoneSensor) !== 'undefined' && config.anyoneSensor !== null) ? config.anyoneSensor : false);
     this.nooneSensor = ((typeof (config.nooneSensor) !== 'undefined' && config.nooneSensor !== null) ? config.nooneSensor : false);
     this.anyoneSensorName = config.anyoneSensorName || 'Anyone';
     this.nooneSensorName = config.nooneSensorName || 'No One';
@@ -20,7 +20,7 @@ class PeopleProPlatform {
     this.webhookEnabled = ((typeof (config.webhookEnabled) !== 'undefined' && config.webhookEnabled !== null) ? config.webhookEnabled : false);
     this.pingInterval = config.pingInterval || 10000;
     this.ignoreWebhookReEnter = config.ignoreWebhookReEnter || 0;
-    this.people = config.people;
+    this.people = config.people || [];
     this.storage = storage;
     this.storage.initSync({ dir: `${homebridge.user.storagePath()}/plugin-persist/homebridge-people-pro` });
     this.webhookQueue = [];

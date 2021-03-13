@@ -8,7 +8,7 @@ const find = require('local-devices');
 class PeopleProAccessory {
   constructor(log, config, platform) {
     this.log = log;
-    this.name = config.name;
+    this.name = config.name || 'People Sensor';
     this.type = 'motion';
     if (typeof config.type !== 'undefined' && config.type !== null) {
       if (typeof config.type !== 'string' || (config.type !== 'motion' && config.type !== 'occupancy')) {
@@ -16,15 +16,21 @@ class PeopleProAccessory {
       } else {
         this.type = config.type;
       }
+    } else {
+      log(`Type "${config.type}" for sensor ${config.name} is invalid. Defaulting to "motion".`);
     }
     this.target = config.target;
+    if (!this.target) {
+      console.log(`No target was given for ${config.name}. Defaulting to "127.0.0.1".`);
+      this.target = '127.0.0.1';
+    }
     if (config.enableCustomDns !== false) {
       this.customDns = config.customDns || false;
       if (typeof this.customDns !== 'boolean' && !Array.isArray(this.customDns)) {
         this.customDns = [this.customDns];
       }
     } else this.customDns = false;
-    this.excludedFromWebhook = config.excludedFromWebhook;
+    this.excludeFromWebhook = config.excludeFromWebhook || false;
     this.platform = platform;
     this.threshold = config.threshold || this.platform.threshold;
     this.pingInterval = config.pingInterval || this.platform.pingInterval;
