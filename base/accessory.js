@@ -21,7 +21,7 @@ class PeopleProAccessory {
     }
     this.target = config.target;
     if (!this.target) {
-      console.log(`No target was given for ${config.name}. Defaulting to "127.0.0.1".`);
+      log(`No target was given for ${config.name}. Defaulting to "127.0.0.1".`);
       this.target = '127.0.0.1';
     }
     if (config.enableCustomDns !== false) {
@@ -248,7 +248,7 @@ class PeopleProAccessory {
           const records = await util.promisify(dns.resolve)(currentTarget, 'A');
           [currentTarget] = records;
         } catch (e) {
-          console.error(e);
+          this.log(`Error during DNS resolve using custom DNS server: ${e.getMessage()}`);
           return;
         }
       }
