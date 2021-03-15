@@ -2,7 +2,7 @@ const {
   PeopleProPlatform,
   PeopleProAccessory,
   PeopleProAllAccessory,
-} = require('./base');
+} = require('./src');
 
 /* Register platform and accessories, set global variables */
 module.exports = (homebridge) => {

@@ -1,6 +1,6 @@
 {
   "watch": [
-    "base",
+    "src",
     "index.js"
   ],
   "ext": "js",

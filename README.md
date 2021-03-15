@@ -6,7 +6,7 @@
 
 # homebridge-people-pro
 
-[![npm](https://img.shields.io/npm/v/homebridge-people-pro.svg)](https://www.npmjs.com/package/homebridge-people-pro) [![npm](https://img.shields.io/npm/dt/homebridge-people-pro.svg)](https://www.npmjs.com/package/homebridge-people-pro) [![github](https://img.shields.io/github/license/mfkrause/homebridge-people-pro)](https://www.github.com/mfkrause/homebridge-people-pro) [![github](https://img.shields.io/github/last-commit/mfkrause/homebridge-people-pro)](https://www.github.com/mfkrause/homebridge-people-pro)
+[![verified-by-homebridge](https://badgen.net/badge/homebridge/verified/purple)](https://github.com/homebridge/homebridge/wiki/Verified-Plugins) [![npm](https://img.shields.io/npm/v/homebridge-people-pro.svg)](https://www.npmjs.com/package/homebridge-people-pro) [![npm](https://img.shields.io/npm/dt/homebridge-people-pro.svg)](https://www.npmjs.com/package/homebridge-people-pro) [![github](https://img.shields.io/github/last-commit/mfkrause/homebridge-people-pro)](https://www.github.com/mfkrause/homebridge-people-pro)
 
 </span>
 
@@ -90,7 +90,7 @@ On some versions of raspbian, users are not able to use the ping program by defa
 
 ## Running in a docker-environment
 
-On some docker-environments (alpine-based for example) it is possible that the ping does not. Please try to install *iptools* in this case via `apk add iputils --no-cache` 
+On some docker-environments (alpine-based for example) it is possible that the ping does not. Please try to install *iptools* in this case via `apk add iputils --no-cache`
 
 ## Thanks
 

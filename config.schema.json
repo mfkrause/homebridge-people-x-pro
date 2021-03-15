@@ -9,7 +9,7 @@
                 "type": "boolean",
                 "title": "Enable anyone sensor",
                 "required": false,
-                "default": true
+                "placeholder": false
             },
             "anyoneSensorName": {
                 "type": "string",
