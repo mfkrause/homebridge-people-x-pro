@@ -101,8 +101,13 @@ class PeopleProAllAccessory {
    * Refreshes the state of the sensor
    */
   refreshState() {
-    this.service.getCharacteristic(Characteristic.OccupancyDetected)
-      .updateValue(this.encodeState(this.getStateFromCache()));
+    if (this.type === 'motion') {
+      this.service.getCharacteristic(Characteristic.MotionDetected)
+        .updateValue(this.encodeState(this.getStateFromCache()));
+    } else {
+      this.service.getCharacteristic(Characteristic.OccupancyDetected)
+        .updateValue(this.encodeState(this.getStateFromCache()));
+    }
   }
 
   getServices() {

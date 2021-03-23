@@ -328,8 +328,13 @@ class PeopleProAccessory {
     const oldState = this.stateCache;
     if (oldState !== newState) {
       this.stateCache = newState;
-      this.service.getCharacteristic(Characteristic.MotionDetected)
-        .updateValue(this.encodeState(newState));
+      if (this.type === 'motion') {
+        this.service.getCharacteristic(Characteristic.MotionDetected)
+          .updateValue(this.encodeState(newState));
+      } else {
+        this.service.getCharacteristic(Characteristic.OccupancyDetected)
+          .updateValue(this.encodeState(newState));
+      }
 
       if (this.platform.peopleAnyOneAccessory) {
         this.platform.peopleAnyOneAccessory.refreshState();
