@@ -240,7 +240,13 @@ class PeopleProAccessory {
         }
       } else currentTarget = this.target;
 
-      if (currentTarget === false) return; // Couldn't look up MAC address
+      if (currentTarget === false) {
+        // Couldn't look up MAC address
+        const newState = this.isActive();
+        this.setNewState(newState);
+        setTimeout(this.pingFunction.bind(this), this.pingInterval);
+        return;
+      }
 
       if (this.customDns !== false) {
         try {
@@ -249,6 +255,9 @@ class PeopleProAccessory {
           [currentTarget] = records;
         } catch (e) {
           this.log(`Error during DNS resolve using custom DNS server: ${e.getMessage()}`);
+          const newState = this.isActive();
+          this.setNewState(newState);
+          setTimeout(this.pingFunction.bind(this), this.pingInterval);
           return;
         }
       }
